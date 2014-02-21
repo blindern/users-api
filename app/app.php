@@ -20,19 +20,23 @@ $routes = explode("/", ltrim($route, "/"));
 
 GET    /users => get list of users with details
        filters: usernames
-PUT    /users => add new user
+POST   /users => add new user
 GET    /user/<username> => get user details
 POST   /user/<username> => update user info
 DELETE /user/<username> => delete user
 
-PUT    /user/<username>/groups/<groupname> => add user to group
+POST   /user/<username>/groups/<groupname> => add user to group
 DELETE /user/<username>/groups/<groupname> => remove user from group
 
 GET    /groups => get list of groups with details
        filters: groupnames
-PUT    /groups => create new group
+POST   /groups => create new group
 GET    /group/<groupname> => get group details
 DELETE /group/<groupname> => delete group
+
+POST   /auth => attempt actual authentication
+       (check how we can hash this password so we don't get cleartext,
+	    and maybe use a salt given from us?)
  */
 
 
