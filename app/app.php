@@ -1,5 +1,8 @@
 <?php
 
+use \Blindern\UsersAPI\Controllers\Users;
+use \Blindern\UsersAPI\Controllers\Groups;
+
 require "../vendor/autoload.php";
 $config = require "config.php";
 
@@ -10,23 +13,49 @@ if (($p = strpos($route, "?")) !== false)
 	$route = substr($route, 0, $p);
 }
 $routes = explode("/", ltrim($route, "/"));
+$method = $_SERVER['REQUEST_METHOD'];
 
 // check access
-// TODO: access control (by IP or credentials)
+// TODO: access control by credentials/certs?
+$allowed = array(
+	'83.143.87.202'
+);
+if (!in_array($_SERVER['REMOTE_ADDR'], $allowed))
+{
+	die("No access.");
+}
+
+// for simplicity we keep the routes-handling here for now
+
+// users
+if ($route == 'users')
+{
+	$c = new Users();
+	if ($method == 'GET')
+	{
+		return $c->get();
+	}
+
+	elseif ($method == 'POST')
+	{
+		return $c->post();
+	}
+}
+
+
+
+
 
 
 // TO IMPLEMENT:
 /*
 
-GET    /users => get list of users with details
-       filters: usernames
-POST   /users => add new user
-GET    /user/<username> => get user details
-POST   /user/<username> => update user info
-DELETE /user/<username> => delete user
+X GET    /user/<username> => get user details
+X POST   /user/<username> => update user info
+X DELETE /user/<username> => delete user
 
-POST   /user/<username>/groups/<groupname> => add user to group
-DELETE /user/<username>/groups/<groupname> => remove user from group
+x POST   /user/<username>/groups/<groupname> => add user to group
+X DELETE /user/<username>/groups/<groupname> => remove user from group
 
 GET    /groups => get list of groups with details
        filters: groupnames

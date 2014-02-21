@@ -1,9 +1,13 @@
 users-api
 =========
 
-API mellom brukerdatabasen og øvrige tjenester
+API between user database and other services.
 
-## user-model
+All services having access to this resource have full access to user database.
+
+## Models
+
+### user-model
 
 * userid (only used by Linux filesystem?)
 * username
@@ -14,7 +18,7 @@ API mellom brukerdatabasen og øvrige tjenester
 
 ```username``` should always be lowercase
 
-## group-model
+### group-model
 
 * groupid (only used by Linux filesystem?)
 * groupname
