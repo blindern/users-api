@@ -1,0 +1,64 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "b7f02aad3d6fa29a0bdfac5c351f3a12",
+    "packages": [
+        {
+            "name": "henrist/openldapauth",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/henrist/openldapauth.git",
+                "reference": "02f34570b6aae6a00df2b551598134cd5e452937"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/henrist/openldapauth/zipball/02f34570b6aae6a00df2b551598134cd5e452937",
+                "reference": "02f34570b6aae6a00df2b551598134cd5e452937",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "HenriSt\\OpenLdapAuth": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Henrik Steen",
+                    "email": "henrist@henrist.net"
+                }
+            ],
+            "description": "OpenLDAP-authentication for Laravel 4",
+            "support": {
+                "source": "https://github.com/henrist/openldapauth/tree/master",
+                "issues": "https://github.com/henrist/openldapauth/issues"
+            },
+            "time": "2014-02-20 09:42:35"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "henrist/openldapauth": 20
+    },
+    "platform": [
+
+    ],
+    "platform-dev": [
+
+    ]
+}

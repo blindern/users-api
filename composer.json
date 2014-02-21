@@ -1,0 +1,20 @@
+{
+    "name": "blindern/users-api",
+    "description": "API mellom brukerdatabasen og øvrige tjenester",
+    "repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:henrist/openldapauth.git"
+		}
+	],
+
+    "authors": [
+        {
+            "name": "Henrik Steen",
+            "email": "henrist@henrist.net"
+        }
+    ],
+    "require": {
+		"henrist/openldapauth": "dev-master"
+    }
+}
