@@ -4,30 +4,30 @@ class Users {
 	public function index()
 	{
 		//
-		// GET    /users => get list of users with details
-		// filters: usernames
+		// GET    /groups => get list of groups with details
+		// filters: groupnames
 		//
 	}
 
 	public function create()
 	{
 		//
-		// POST   /users => add new user
+		// POST   /groups => add new group
 		//
 	}
 
-	public function show($username)
+	public function show($groupname)
 	{
-		// GET    /user/<username> => get user details
+		// GET    /group/<groupname> => get group details
 	}
 
-	public function update($username)
+	public function update($groupname)
 	{
-		// POST   /user/<username> => update user info
+		// POST   /group/<groupname> => update group info
 	}
 
-	public function delete($username)
+	public function delete($groupname)
 	{
-		// DELETE /user/<username> => delete user
+		// DELETE /group/<groupname> => delete group
 	}
 }

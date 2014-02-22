@@ -16,5 +16,12 @@
     ],
     "require": {
 		"henrist/openldapauth": "dev-master"
-    }
+    },
+	
+	"autoload": {
+		"psr-4": {
+			"Blindern\\UsersAPI\\Controllers\\": "app/controllers/",
+			"Blindern\\UsersAPI\\": "app/src/"
+		}
+	}
 }

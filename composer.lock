@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b7f02aad3d6fa29a0bdfac5c351f3a12",
+    "hash": "f4de117ab57284d7058481434f74ce43",
     "packages": [
         {
             "name": "henrist/openldapauth",
