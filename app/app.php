@@ -13,6 +13,13 @@ if (!in_array($_SERVER['REMOTE_ADDR'], $allowed))
 	die("No access.");
 }
 
+function app()
+{
+	return array(
+		'config' => require "config.php"
+	);
+}
+
 $data = require "route.php";
 if ($data === null)
 {

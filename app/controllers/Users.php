@@ -1,33 +1,127 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
+use HenriSt\OpenLdapAuth\LdapUser;
+use Blindern\UsersAPI\Response;
+
 class Users {
 	public function index()
 	{
 		//
-		// GET    /groups => get list of groups with details
-		// filters: groupnames
+		// GET    /users => get list of users with details
+		// filters: usernames
 		//
+
+		return LdapUser::all();
 	}
 
 	public function create()
 	{
 		//
-		// POST   /groups => add new group
+		// POST   /users => add new user
 		//
+
+		// data we require:
+		// username
+		// realname
+		// email
+
+		$fields = array('username', 'realname', 'email', 'phone', 'password');
+		$require = array('username', 'realname', 'email');
+
+		foreach ($require as $f)
+		{
+			if (!isset($_POST[$f]))
+			{
+				return Response::forge(Response::INVALID_REQUEST, 'Required fields missing.');
+			}
+		}
+
+		// set up LDAP
+		$config = app()->config['auth']['ldap'];
+		$ldap = new Ldap($config);
+
+		$user = new LdapUser(array(), $ldap);
+		foreach ($fields as $f)
+		{
+			if (isset($_POST[$f]))
+			{
+				if ($f == 'password')
+				{
+					// TODO $user->setPassword($_POST[$f]);
+				}
+
+				else
+				{
+					$user->$f = $_POST[$f];
+				}
+			}
+		}
+
+		$user->store();
+		return Response::forge(Response::SUCCESS, '', $user);
 	}
 
-	public function show($groupname)
+	public function show($username)
 	{
-		// GET    /group/<groupname> => get group details
+		// GET    /user/<username> => get user details
+
+		$user = LdapUser::find($username);
+		return Response::forge(Response::SUCCESS, null, $user);
 	}
 
-	public function update($groupname)
+	public function update($username)
 	{
-		// POST   /group/<groupname> => update group info
+		// POST   /user/<username> => update user info
+		// username must be manually updated
+
+		if (!($user = LdapUser::find($username)))
+		{
+			return Response::forge(Response::USER_NOT_FOUND, 'Could not find user.');
+		}
+
+		// fields that can be updated
+		$fields = array('realname', 'email', 'phone', 'password');
+		$update = array();
+
+		foreach ($fields as $f)
+		{
+			if (isset($_POST[$f]))
+			{
+				$update[$f] = $_POST[$f];
+			}
+		}
+
+		// validate data
+		$helper = new UserHelper();
+		$validate = $helper->validate($update);
+		if ($validate !== true)
+		{
+			return Response::forge(Response::INVALID_DATA, 'Data did not validate.', $validate);
+		}
+
+		// update data
+		foreach ($update as $field => $data)
+		{
+			$user->$field = $data;
+		}
+
+		$user->store();
+		return Response::forge(Response::SUCCESS, '', $user);
 	}
 
-	public function delete($groupname)
+	public function delete($username)
 	{
-		// DELETE /group/<groupname> => delete group
+		// DELETE /user/<username> => delete user
+		if (!($user = LdapUser::find($username)))
+		{
+			return Response::forge(Response::USER_NOT_FOUND, 'Could not find user.');
+		}
+
+		if ($user->delete())
+		{
+			return Response::forge(Response::SUCCESS, '', $user);
+		}
+
+		return Response::forge(Response::ERROR, 'Unknown error.');
 	}
 }
