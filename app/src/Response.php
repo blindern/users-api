@@ -16,7 +16,7 @@ class Response {
 		return $x;
 	}
 
-	public $statusCode = static::SUCCESS;
+	public $statusCode = self::SUCCESS;
 	public $statusText = '';
 	public $result;
 

@@ -3,40 +3,47 @@
 return array(
 	"relative_path" => "/users-api",
 	
-	'ldap' => array(
-		'server' => 'ldap.blindern-studenterhjem.no',
-		'tls' => true,
+	'auth' => array(
+		'ldap' => array(
+			'server' => 'ldap.blindern-studenterhjem.no',
+			'tls' => true,
 
-		'base_dn' => 'dc=blindern-studenterhjem,dc=no',
-		'group_dn' => 'ou=Groups,dc=blindern-studenterhjem,dc=no',
-		'user_dn' => 'ou=Users,dc=blindern-studenterhjem,dc=no',
-		'bind_dn' => 'uid=USERNAME,ou=Users,dc=blindern-studenterhjem,dc=no',
-		'username_field' => 'uid',
+			'base_dn' => 'dc=blindern-studenterhjem,dc=no',
+			'group_dn' => 'ou=Groups,dc=blindern-studenterhjem,dc=no',
+			'user_dn' => 'ou=Users,dc=blindern-studenterhjem,dc=no',
+			'bind_dn' => 'uid=USERNAME,ou=Users,dc=blindern-studenterhjem,dc=no',
+			'username_field' => 'uid',
 
-		// name of group where members are considered to be superadmins
-		'superadmin_group' => 'admin',
+			'admin_dn' => 'cn=admin,dc=blindern-studenterhjem,dc=no',
+			'admin_pw' => require "../../ldap-pass.php",
 
-		// field mappeing for users
-		'user_fields' => array(
-			'unique_id' => 'uid', // what it is identified by
-			'id' => 'uidNumber',
-			'username' => 'uid',
-			'email' => 'mail',
-			'realname' => 'cn',
-			'phone' => 'mobile'
-		),
+			// name of group where members are considered to be superadmins
+			'superadmin_group' => 'admin',
 
-		// field mapping for groups
-		'group_fields' => array(
-			'unique_id' => 'cn', // what it is identified by
-			'id' => 'gidNumber',
-			'name' => 'cn',
-			'members' => 'memberUid'
-		),
+			// field mappeing for users
+			'user_fields' => array(
+				'unique_id' => 'uid', // what it is identified by
+				'id' => 'uidNumber',
+				'username' => 'uid',
+				'email' => 'mail',
+				'realname' => 'cn',
+				'phone' => 'mobile'
+			),
 
-		// don't show these groups
-		'groups_ignore' => array(
-			"Domain Users",
-			"Domain Admins"
+			// field mapping for groups
+			'group_fields' => array(
+				'unique_id' => 'cn', // what it is identified by
+				'id' => 'gidNumber',
+				'name' => 'cn',
+				'members' => 'memberUid',
+				'description' => 'description'
+			),
+
+			// don't show these groups
+			'groups_ignore' => array(
+				"Domain Users",
+				"Domain Admins"
+			)
 		)
+	)
 );

@@ -1,6 +1,7 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
-use HenriSt\OpenLdapAuth\LdapUser;
+use HenriSt\OpenLdapAuth\Helpers\Ldap;
+use HenriSt\OpenLdapAuth\LdapUsers;
 use Blindern\UsersAPI\Response;
 
 class Users {
@@ -11,7 +12,7 @@ class Users {
 		// filters: usernames
 		//
 
-		return LdapUser::all();
+		return Ldap::forge()->getUserHelper()->all(true);
 	}
 
 	public function create()
@@ -65,7 +66,7 @@ class Users {
 	{
 		// GET    /user/<username> => get user details
 
-		$user = LdapUser::find($username);
+		$user = Ldap::forge()->getUserHelper()->find($username);
 		return Response::forge(Response::SUCCESS, null, $user);
 	}
 

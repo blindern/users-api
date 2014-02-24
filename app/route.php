@@ -5,7 +5,7 @@ use \Blindern\UsersAPI\Controllers\UsersGroups;
 use \Blindern\UsersAPI\Controllers\Groups;
 
 // get route
-$route = substr($_SERVER['REQUEST_URI'], strlen($config['relative_path']));
+$route = ltrim(substr($_SERVER['REQUEST_URI'], strlen($config['relative_path'])), "/");
 if (($p = strpos($route, "?")) !== false)
 {
 	$route = substr($route, 0, $p);
@@ -113,3 +113,5 @@ elseif ($route == 'simpleauth' && $method == 'POST' && $_SERVER["HTTPS"] == 'on'
 	$c = new Auth();
 	return $c->simple();
 }
+
+return null;
