@@ -1,5 +1,6 @@
 <?php
 
+use \Blindern\UsersAPI\Controllers\Auth;
 use \Blindern\UsersAPI\Controllers\Users;
 use \Blindern\UsersAPI\Controllers\UsersGroups;
 use \Blindern\UsersAPI\Controllers\Groups;

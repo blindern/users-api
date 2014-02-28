@@ -1,11 +1,12 @@
 <?php namespace Blindern\UsersAPI;
 
 class Response {
-	const SUCCESS = 0;
-	const ERROR = 1;
-	const INVALID_REQUEST = 2;
-	const INVALID_DATA = 3;
-	const USER_NOT_FOUND = 10;
+	const SUCCESS = 200;
+	const ERROR = 500;
+	const INVALID_REQUEST = 400;
+	const INVALID_DATA = 406;
+	const LOGIN_FAIL = 401;
+	const NOT_FOUND = 404;
 
 	public static function forge($statusCode, $statusText, $result = null)
 	{

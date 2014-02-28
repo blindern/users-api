@@ -1,12 +1,21 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
+use HenriSt\OpenLdapAuth\Helpers\Ldap;
 use Blindern\UsersAPI\Controllers\Users;
+use Blindern\UsersAPI\Response;
 
 class Auth {
 	/**
 	 * Authenticate by using username and plain password
+	 * POST: /simpleauth
 	 *
-	 * POST-data: username, password
+	 * Data required:
+	 * - username
+	 * - password (in clear text, we need it to auth to LDAP-database)
+	 *
+	 * @return  The user as authed if success,
+	 *          INVALID_REQUEST if parameters missing (and data = null)
+	 *          LOGIN_FAIL if auth failed (and data = null)
 	 */
 	public function simple()
 	{
@@ -26,12 +35,16 @@ class Auth {
 			return $c->show($_POST['username']);
 		}
 
-		return Respose::forge(Response::SUCCESS, '', null);
+		return Response::forge(Response::LOGIN_FAIL, '', null);
 	}
 
+	/**
+	 * TODO: Authenticate by hashed value, if possible?
+	 *
+	 * Maybe use a salt given from us for encryption, certificates or something else?
+	 */
 	public function hashed()
 	{
-		// TODO: how can we implement this?
-		// (maybe use a salt given from us?)
+		throw new \Exception("Not implemented");
 	}
 }

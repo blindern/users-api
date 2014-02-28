@@ -1,5 +1,7 @@
 <?php
 
+use Blindern\UsersAPI\Response;
+
 require "../vendor/autoload.php";
 $config = require "config.php";
 
@@ -7,7 +9,8 @@ $config = require "config.php";
 // TODO: access control by credentials/certs?
 $allowed = array(
 	'83.143.87.202',
-	'37.191.201.59'
+	'37.191.201.59',
+	'37.191.203.140'
 );
 if (!in_array($_SERVER['REMOTE_ADDR'], $allowed))
 {
@@ -39,9 +42,12 @@ if ($data === null)
 	die("Not implemented.");
 }
 
+header('Content-Type: application/json');
+
 if (is_array($data))
 {
-	echo json_encode($data);
+	$r = Response::forge(Response::SUCCESS, '', $data);
+	echo $r;
 }
 
 else
