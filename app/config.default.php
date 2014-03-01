@@ -42,7 +42,14 @@ return array(
 			// don't show these groups
 			'groups_ignore' => array(
 				"Domain Users",
-				"Domain Admins"
+				"Domain Admins",
+				"Account Operators",
+				"Administrators",
+				"Backup Operators",
+				"Domain Computers",
+				"Domain Guests",
+				"Print Operators",
+				"Replicators"
 			)
 		)
 	)

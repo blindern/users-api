@@ -44,7 +44,7 @@ class Users {
 		if ($level < 0 || $level > 3) $level = 0;
 		if ($level > 0)
 		{
-			$ldap->getUserHelper()->fetchGroups($users);
+			$ldap->getUserHelper()->loadGroups($users);
 		}
 
 		$list = array();
@@ -138,8 +138,11 @@ class Users {
 	{
 		// GET    /user/<username> => get user details
 
-		$user = Ldap::forge()->getUserHelper()->find($username, 1);
-		return Response::forge(Response::SUCCESS, null, $user);
+		$ldap = Ldap::forge();
+		$user = $ldap->getUserHelper()->find($username);
+		$ldap->getUserHelper()->loadGroups($user);
+
+		return $user->toArray(array(), 2);
 	}
 
 	/**
