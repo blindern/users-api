@@ -9,6 +9,7 @@ $config = require "config.php";
 // TODO: access control by credentials/certs?
 $allowed = array(
 	'83.143.87.202',
+	'83.143.83.35',
 	'37.191.201.59',
 	'37.191.203.140'
 );
