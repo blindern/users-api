@@ -5,7 +5,7 @@ return array(
 	
 	'auth' => array(
 		'ldap' => array(
-			'server' => 'ldap.blindern-studenterhjem.no',
+			'server' => 'ldap.foreningenbs.no',
 			'tls' => true,
 
 			'base_dn' => 'dc=blindern-studenterhjem,dc=no',
