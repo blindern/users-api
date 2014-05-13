@@ -1,6 +1,6 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
-use HenriSt\OpenLdapAuth\Helpers\Ldap;
+use Blindern\UsersAPI\LDAP\Helpers\Ldap;
 use Blindern\UsersAPI\Controllers\Users;
 use Blindern\UsersAPI\Response;
 
