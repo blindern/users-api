@@ -16,6 +16,7 @@ All services having access to this resource have full access to user database.
 * realname
 * email
 * phone
+* groups_relation => array(group => givenbygroup, ..)
 * groups => group-model collection
 
 ```username``` should always be lowercase
@@ -26,7 +27,10 @@ Password-updates can be done by pushing 'password' when updating a user.
 
 * groupid (unique, only used by Linux filesystem?)
 * groupname (unique)
-* members => user-model collection
+* owners => list of owners grouped by users and subgroups
+* members => list of members grouped by users and subgroups
+* members_relation => expanded list of members with source group in subarray
+* members_data => user-model collection
 
 ## Responses
 

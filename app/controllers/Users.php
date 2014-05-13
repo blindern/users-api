@@ -1,8 +1,8 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
-use HenriSt\OpenLdapAuth\Helpers\Ldap;
-use HenriSt\OpenLdapAuth\LdapUsers;
 use Blindern\UsersAPI\Response;
+use Blindern\UsersAPI\User;
+use Blindern\UsersAPI\UserHelper;
 
 class Users {
 	/**
@@ -27,31 +27,24 @@ class Users {
 	 */
 	public function index()
 	{
-		$ldap = Ldap::forge();
+		$uh = UserHelper::forge();
+
 		if (isset($_GET['usernames']))
 		{
 			$names = explode(",", $_GET['usernames']);
-			$users = $ldap->getUserHelper()->getByNames($names);
+			$users = $uh->getByNames($names);
 		}
 
 		else
 		{
-			$users = $ldap->getUserHelper()->all();
+			$users = $uh->all();
 		}
 		
 		// we need to load the groups for the users
 		$level = isset($_GET['grouplevel']) ? (int) $_GET['grouplevel'] : 0;
 		if ($level < 0 || $level > 3) $level = 0;
-		if ($level > 0)
-		{
-			$ldap->getUserHelper()->loadGroups($users);
-		}
-
-		$list = array();
-		foreach ($users as $user)
-		{
-			$list[] = $user->toArray(array(), $level);
-		}
+		
+		$list = $uh->generateArray($users, $level, $level);
 
 		return $list;
 	}
@@ -138,11 +131,12 @@ class Users {
 	{
 		// GET    /user/<username> => get user details
 
-		$ldap = Ldap::forge();
-		$user = $ldap->getUserHelper()->find($username);
-		$ldap->getUserHelper()->loadGroups($user);
+		// TODO: 404
 
-		return $user->toArray(array(), 2);
+		$uh = UserHelper::forge();
+		$user = $uh->find($username);
+
+		return $user->toArray(array(), 2, 2);
 	}
 
 	/**

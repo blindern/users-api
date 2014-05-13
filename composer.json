@@ -15,8 +15,7 @@
         }
     ],
     "require": {
-		"henrist/openldapauth": "dev-master",
-		"laravel/framework": "4.1.*"
+		
     },
 	
 	"autoload": {

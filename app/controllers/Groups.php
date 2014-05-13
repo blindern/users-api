@@ -1,8 +1,8 @@
 <?php namespace Blindern\UsersAPI\Controllers;
 
-use HenriSt\OpenLdapAuth\Helpers\Ldap;
-use HenriSt\OpenLdapAuth\LdapGroup;
+use Blindern\UsersAPI\Group;
 use Blindern\UsersAPI\Response;
+use Blindern\UsersAPI\GroupHelper;
 
 class Groups {
 	/**
@@ -25,22 +25,21 @@ class Groups {
 	 */
 	public function index()
 	{
-		$ldap = Ldap::forge();
+		$h = GroupHelper::forge();
+
 		if (isset($_GET['groupnames']))
 		{
 			$names = explode(",", $_GET['groupnames']);
-			$groups = $ldap->getGroupHelper()->getByNames($names);
+			$groups = $h->getByNames($names);
 		}
 
 		else
 		{
-			$groups = $ldap->getGroupHelper()->all();
+			$groups = $h->all();
 		}
 
-		if (isset($_GET['getmembers']))
-		{
-			$ldap->getGroupHelper()->loadUsers($groups);
-		}
+		$depth = isset($_GET['getmembers']) ? 4 : 0;
+		$groups = $h->generateArray($groups, $depth, $depth);
 
 		return Response::forge(Response::SUCCESS, null, $groups);
 	}
@@ -84,9 +83,12 @@ class Groups {
 	 */
 	public function show($groupname)
 	{
-		$ldap = Ldap::forge();
-		$group = $ldap->getGroupHelper()->find($groupname);
-		$ldap->getGroupHelper()->loadUsers($group);
+		$gh = GroupHelper::forge();
+
+		// TODO: 404
+		$group = $gh->find($groupname);
+
+		$group = $group->toArray(array(), 3, 3);
 
 		return Response::forge(Response::SUCCESS, null, $group);
 	}
