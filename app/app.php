@@ -5,21 +5,6 @@ use Blindern\UsersAPI\Response;
 require "../vendor/autoload.php";
 $config = require "config.php";
 
-// check access
-// TODO: access control by credentials/certs?
-$allowed = array(
-	'83.143.87.202',
-	'83.143.83.35',
-	'37.191.201.59',
-	'37.191.203.140',
-	'37.191.206.221',
-	'127.0.0.1'
-);
-if (!in_array($_SERVER['REMOTE_ADDR'], $allowed))
-{
-	die("No access.");
-}
-
 class appobj {
 	public static function get()
 	{
@@ -38,6 +23,11 @@ function app()
 {
 	return appobj::get();
 }
+
+// HMAC-check
+$hmac = new \Blindern\UsersAPI\HMAC();
+if (!$hmac->verify_request())
+	die("HMAC-authorization failed.");
 
 $data = require "route.php";
 if ($data === null)

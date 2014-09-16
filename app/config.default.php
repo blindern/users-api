@@ -1,5 +1,7 @@
 <?php
 
+$secrets = require "secrets.php";
+
 return array(
 	"relative_path" => "/users-api",
 	
@@ -15,7 +17,7 @@ return array(
 			'username_field' => 'uid',
 
 			'admin_dn' => 'cn=admin,dc=foreningenbs,dc=no',
-			'admin_pw' => require "../../ldap-pass.php",
+			'admin_pw' => $secrets['ldap_pass'],
 
 			// name of group where members are considered to be superadmins
 			'superadmin_group' => 'admin',
@@ -58,6 +60,9 @@ return array(
 		),
 
 		'cache_file' => dirname(__FILE__).'/cache/userdata.tmp',
-		'cache_timeout' => 300 // TODO
+		'cache_timeout' => 300, // TODO
+
+		'api_key' => $secrets['api_key'],
+		'api_timeout' => 300 // allow 5 minutes time delay
 	)
 );

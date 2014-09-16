@@ -59,3 +59,17 @@ Must be used over SSL.
 POST-data:
 * username
 * password in plaintext
+
+## Secret data
+The file ```/app/secrets.php``` needs to return an array with the following data:
+```php
+<?php
+
+return array(
+	'ldap_pass' => 'REPLACE',
+	'api_key' => 'REPLACE'
+);
+```
+
+## To do
+* Document HMAC-signing (it is required for all requests)
