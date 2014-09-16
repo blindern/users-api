@@ -35,13 +35,15 @@ Password-updates can be done by pushing 'password' when updating a user.
 ## Responses
 
 JSON is returned following this syntax:
-```{
+```json
+{
 	'status': {
 		'code': 'STATUSCODE'
 		'text': 'data here'
 	},
 	'result: DATA-GENERATED
-}```
+}
+```
 
 STATUSCODE of 0 means success, other is error
 
@@ -51,8 +53,7 @@ DATA-GENERATED is the actual response
 
 ### Authing
 
-Simple method:
-```/simpleauth```
+Simple method: ```/simpleauth```
 
 Must be used over SSL.
 
@@ -62,6 +63,7 @@ POST-data:
 
 ## Secret data
 The file ```/app/secrets.php``` needs to return an array with the following data:
+
 ```php
 <?php
 
