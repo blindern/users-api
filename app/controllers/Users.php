@@ -35,6 +35,12 @@ class Users {
 			$users = $uh->getByNames($names);
 		}
 
+		elseif (isset($_GET['emails']))
+		{
+			$emails = explode(",", $_GET['emails']);
+			$users = $uh->getByEmails($emails);
+		}
+
 		else
 		{
 			$users = $uh->all();

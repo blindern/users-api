@@ -62,4 +62,41 @@ class UserHelper extends UserGroupHelper {
 
 		return true;
 	}
+
+	/**
+	 * Get collection from email adresses
+	 * @param array list of email adresses
+	 * @return array(array|null object, ..)
+	 */
+	public function getByEmails(array $emails)
+	{
+		$objname = $this->getObjName();
+		$provider = DataProvider::forge();
+
+		$data = $provider->getData();
+
+		$ret = array();
+		foreach ($emails as $email)
+		{
+			$email = strtolower($email);
+			if (isset($data->emails[$email]))
+			{
+				foreach ($data->emails[$email] as $username)
+				{
+					if (isset($this->all[$username]))
+					{
+						$ret[] = $this->all[$username];
+					}
+
+					else
+					{
+						$this->all[$username] = new $objname($data->users[$username]);
+						$ret[] = $this->all[$username];
+					}
+				}
+			}
+		}
+
+		return $ret;
+	}
 }

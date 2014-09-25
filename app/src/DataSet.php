@@ -6,4 +6,5 @@ class DataSet {
 	public $group_users;
 	public $user_groups;
 	public $user_owns;
+	public $emails;
 }

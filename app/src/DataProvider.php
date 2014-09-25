@@ -65,6 +65,7 @@ class DataProvider {
 		$set->group_users = $data['group_users'];
 		$set->user_groups = $data['user_groups'];
 		$set->user_owns = $data['user_owns'];
+		$set->emails = $data['emails'];
 		$this->cache = $set;
 
 		file_put_contents($f, serialize(array("time" => time(), "data" => $this->cache)));

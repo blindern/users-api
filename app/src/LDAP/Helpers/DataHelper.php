@@ -98,12 +98,26 @@ class DataHelper {
 			$groups_s[$group->name] = $group->toArray();
 		}
 
+		// create reference from email adresses to usernames
+		$emails = array();
+		foreach ($users as $user)
+		{
+			// there are no constraints to make email unique, multiple users might possibly have same email
+			if (!empty($user->email))
+			{
+				$email = strtolower($user->email);
+				if (!isset($emails[$email])) $emails[$email] = array();
+				$emails[$email][] = $user->username;
+			}
+		}
+
 		return array(
 			'users' => $users_s,
 			'groups' => $groups_s,
 			'group_users' => $group_members,
 			'user_groups' => $user_groups,
-			'user_owns' => $user_owns);
+			'user_owns' => $user_owns,
+			'emails' => $emails);
 	}
 
 	/**
