@@ -85,12 +85,12 @@ class Groups {
 	{
 		$gh = GroupHelper::forge();
 
-		// TODO: 404
 		$group = $gh->find($groupname);
+		if (is_null($group)) {
+			return Response::forge(Response::NOT_FOUND, 'Could not find group.');
+		}
 
-		$group = $group->toArray(array(), 3, 3);
-
-		return Response::forge(Response::SUCCESS, null, $group);
+		return $group->toArray(array(), 3, 3);
 	}
 
 	/**

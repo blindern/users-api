@@ -137,10 +137,11 @@ class Users {
 	{
 		// GET    /user/<username> => get user details
 
-		// TODO: 404
-
 		$uh = UserHelper::forge();
 		$user = $uh->find($username);
+		if (is_null($user)) {
+			return Response::forge(Response::NOT_FOUND, 'Could not find user.');
+		}
 
 		return $user->toArray(array(), 2, 2);
 	}
