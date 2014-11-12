@@ -73,7 +73,26 @@ class Ldap {
 		// don't run if connected
 		if ($this->conn) return;
 
-		$this->conn = ldap_connect($this->config['server']);
+		// the connections seems to randomly fail, so retry for a few times
+		$e = null;
+		for ($i = 0; $i < 3; $i++)
+		{
+			try {
+				$this->connectAttempt();
+				return;
+			} catch (LdapException $e) {}
+		}
+
+		throw $e;
+	}
+
+	/**
+	 * Connect to LDAP-server (helper function)
+	 * @return void
+	 */
+	private function connectAttempt()
+	{
+		$this->conn = @ldap_connect($this->config['server']);
 		if (!$this->conn)
 		{
 			throw new LdapException("Cannot connect to {$this->config['server']}.");
@@ -85,7 +104,7 @@ class Ldap {
 		// tls?
 		if (!empty($this->config['tls']))
 		{
-			if (!ldap_start_tls($this->conn))
+			if (!@ldap_start_tls($this->conn))
 			{
 				throw new LdapException("Could not start TLS to {$this->config['server']}.");
 			}
