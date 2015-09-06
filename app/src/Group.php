@@ -36,7 +36,9 @@ class Group extends UserGroupCommon {
 				foreach ($data->group_users[$this->name] as $user => $dummy)
 				{
 					$u = $uh->find($user);
-					$d['members_data'][$user] = $u->toArray();
+					if ($u) {
+						$d['members_data'][$user] = $u->toArray();
+					}
 				}
 			}
 		}
