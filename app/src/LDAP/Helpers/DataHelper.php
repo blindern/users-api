@@ -41,7 +41,14 @@ class DataHelper {
 			$names = array();
 			foreach (array_keys($members) as $username)
 			{
-				$names[] = $users['uid='.$username.','.$this->ldap->config['user_dn']]->realname;
+				$dn = 'uid='.$username.','.$this->ldap->config['user_dn'];
+				// users might be deleted while the group membership still exists
+				// so check if this user actually exists, else just add the username to avoid sorting issues
+				if (isset($users[$dn])) {
+					$names[] = $users[$dn]->realname;
+				} else {
+					$names[] = $username;
+				}
 			}
 			array_multisort($names, SORT_ASC, $members);
 		}
