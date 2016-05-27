@@ -23,6 +23,12 @@ class User extends UserGroupCommon {
 		// show list of groups
 		if ($memberdepth >= 1)
 		{
+			// show with group data
+			if ($memberdepth >= 2)
+			{
+				$d['groups'] = array();
+			}
+
 			$d['groups_relation'] = array();
 			if (isset($data->user_groups[$this->username]))
 			{
@@ -31,7 +37,6 @@ class User extends UserGroupCommon {
 				// show with group data
 				if ($memberdepth >= 2)
 				{
-					$d['groups'] = array();
 					foreach ($data->user_groups[$this->username] as $groupname => $dummy)
 					{
 						$group = $gh->find($groupname);
