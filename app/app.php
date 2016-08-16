@@ -27,6 +27,7 @@ function app()
 // HMAC-check
 $hmac = new \Blindern\UsersAPI\HMAC();
 if (!$hmac->verify_request())
+{
 	// allow GET from localhost
 	$is_local = $_SERVER['REQUEST_METHOD'] != 'GET' || $_SERVER['REMOTE_ADDR'] == '127.0.0.1';
 	$is_local = $is_local && !isset($_SERVER['HTTP_X_FORWARDED_FOR']); // reject forwarded requests
@@ -35,6 +36,7 @@ if (!$hmac->verify_request())
 		header("HTTP/1.0 403 Forbidden");
 		die("HMAC-authorization failed.");
 	}
+}
 
 $data = require "route.php";
 if ($data === null)
