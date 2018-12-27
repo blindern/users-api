@@ -21,7 +21,7 @@ database.
 
 ## TODO
 
-- CI setup
+- improved CI setup
 - docker setup
 - replace HMAC with simpler bearer token
 - simpler v2 version of the api
