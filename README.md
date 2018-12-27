@@ -23,7 +23,6 @@ database.
 
 - CI setup
 - docker setup
-- endpoint for cache invalidation
 - logback setup
 - replace HMAC with simpler bearer token
 - simpler v2 version of the api

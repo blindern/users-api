@@ -12,4 +12,8 @@ class DataProvider(config: Config, private val ldap: Ldap) {
     }
 
   fun getData(): AllData = cache["cache"]!!
+
+  fun invalidateCache() {
+    cache.invalidateAll()
+  }
 }

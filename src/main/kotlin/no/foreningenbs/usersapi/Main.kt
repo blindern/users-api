@@ -1,5 +1,6 @@
 package no.foreningenbs.usersapi
 
+import no.foreningenbs.usersapi.api.InvalidateCache
 import no.foreningenbs.usersapi.api.auth.SimpleAuth
 import no.foreningenbs.usersapi.api.groups.GetGroup
 import no.foreningenbs.usersapi.api.groups.ListGroups
@@ -46,6 +47,7 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
     hmacFilter
       .then(WrappedResponse.filter)
       .then(routes(
+        "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
         "/users" bind GET to ListUsers(dataProvider).handler,
         "/users" bind POST to { Response(NOT_IMPLEMENTED) },
         "/user/{username}" bind GET to GetUser(dataProvider).handler,
