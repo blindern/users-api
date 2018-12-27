@@ -1,8 +1,14 @@
 {"status":{"code":200,"text":"OK"},"result":[
   {
-    "id": 1234,
+    "id": 22,
     "unique_id": "beboer",
     "name": "beboer",
+    "description": null
+  },
+  {
+    "id": 21,
+    "unique_id": "admin",
+    "name": "admin",
     "description": null
   }
 ]}
