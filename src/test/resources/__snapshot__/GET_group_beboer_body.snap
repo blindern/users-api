@@ -1,0 +1,37 @@
+{"status":{"code":200,"text":"OK"},"result":{
+  "id": 1234,
+  "unique_id": "beboer",
+  "name": "beboer",
+  "description": null,
+  "members": {
+    "users": [
+      "halvargimnes"
+    ],
+    "groups": []
+  },
+  "members_relation": {
+    "halvargimnes": [
+      "beboer"
+    ]
+  },
+  "owners": {
+    "users": [],
+    "groups": []
+  },
+  "members_data": {
+    "halvargimnes": {
+      "id": 1234,
+      "unique_id": "halvargimnes",
+      "username": "halvargimnes",
+      "email": "halvargimnes@foreningenbs.no",
+      "realname": "Halvar Gimnes",
+      "phone": null,
+      "groups_relation": {
+        "beboer": [
+          "beboer"
+        ]
+      },
+      "groupsowner_relation": {}
+    }
+  }
+}}

@@ -1,0 +1,10 @@
+{"status":{"code":200,"text":"OK"},"result":[
+  {
+    "id": 1234,
+    "unique_id": "halvargimnes",
+    "username": "halvargimnes",
+    "email": "halvargimnes@foreningenbs.no",
+    "realname": "Halvar Gimnes",
+    "phone": null
+  }
+]}

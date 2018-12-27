@@ -1,0 +1,68 @@
+package no.foreningenbs.usersapi.hmac
+
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import no.foreningenbs.usersapi.hmac.HmacFilter.Companion.hashHeader
+import no.foreningenbs.usersapi.hmac.HmacFilter.Companion.timeHeader
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Uri
+import org.http4k.core.body.formAsMap
+import org.http4k.core.with
+import java.time.Instant
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+
+class Hmac(private val timeout: Long, private val key: String) {
+  private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
+  fun isValidTime(time: Long): Boolean {
+    val now = Instant.now().epochSecond
+    return ((now - timeout)..(now + timeout)).contains(time)
+  }
+
+  fun withHmac(req: Request): Request {
+    val time = Instant.now().epochSecond
+
+    return req
+      .with(
+        hashHeader of
+          generateHash(time, req.method, req.uri, req.formAsMap())
+      )
+      .with(timeHeader of time)
+  }
+
+  fun generateHash(
+    time: Long,
+    method: Method,
+    uri: Uri,
+    vars: Map<String, List<String?>>
+  ): String {
+    val flatVars = vars
+      .map { (key, list) ->
+        // Only pick first variable if multiple is given
+        key to list[0]
+      }
+      .toMap()
+
+    val dataList = listOf(
+      time.toString(),
+      method.toString(),
+      uri.toString(),
+      flatVars
+    )
+
+    val data = moshi.adapter(List::class.java).toJson(dataList)
+
+    val hasher = Mac.getInstance("HmacSHA256")
+    hasher.init(SecretKeySpec(key.toByteArray(), "HmacSHA256"))
+    return hasher.doFinal(data.toByteArray())!!.contentToString()
+  }
+
+  companion object {
+    const val HASH_HEADER = "X-API-Hash"
+    const val TIME_HEADER = "X-API-Time"
+  }
+}

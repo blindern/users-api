@@ -1,77 +1,68 @@
-users-api
-=========
+# users-api
 
 API between user database and other services. The objective is to have an API
 so that the underlying user database can be swapped from LDAP to other types,
 if necessary.
 
-All services having access to this resource have full access to user database.
+All services having access to this resource have full access to the user
+database.
 
-## Models
+## Tech used
 
-### user-model
+- JVM as runtime
+- Kotlin as language: https://kotlinlang.org/docs/reference/
+- Gradle with Kotlin DSL for building: https://docs.gradle.org/5.0/userguide/kotlin_dsl.html
+- Http4k as HTTP toolkit: https://www.http4k.org/
+- Caffeine as cache library: https://github.com/ben-manes/caffeine
+- Moshi for Json serialization: https://github.com/square/moshi
+- Spek 2 for testing: https://spekframework.org/
+- Kluent for assertions: https://github.com/MarkusAmshove/Kluent
+- MockK for mocking: https://mockk.io/
 
-* userid (unique, only used by Linux filesystem?)
-* username (unique)
-* realname
-* email
-* phone
-* groups_relation => array(group => givenbygroup, ..)
-* groups => group-model collection
+## TODO
 
-```username``` should always be lowercase
+- CI setup
+- docker setup
+- endpoint for cache invalidation
+- logback setup
+- replace HMAC with simpler bearer token
+- simpler v2 version of the api
+- deploy as app and test in prod
 
-Password-updates can be done by pushing 'password' when updating a user.
+## Linting and testing
 
-### group-model
-
-* groupid (unique, only used by Linux filesystem?)
-* groupname (unique)
-* owners => list of owners grouped by users and subgroups
-* members => list of members grouped by users and subgroups
-* members_relation => expanded list of members with source group in subarray
-* members_data => user-model collection
-
-## Responses
-
-JSON is returned following this syntax:
-```json
-{
-	'status': {
-		'code': 'STATUSCODE'
-		'text': 'data here'
-	},
-	'result: DATA-GENERATED
-}
+```bash
+./gradlew ktlintCheck test
 ```
 
-STATUSCODE of 0 means success, other is error
+## Building and running
 
-DATA-GENERATED is the actual response
-
-## Requests
-
-### Authing
-
-Simple method: ```/simpleauth```
-
-Must be used over SSL.
-
-POST-data:
-* username
-* password in plaintext
-
-## Secret data
-The file ```/app/secrets.php``` needs to return an array with the following data:
-
-```php
-<?php
-
-return array(
-	'ldap_pass' => 'REPLACE',
-	'api_key' => 'REPLACE'
-);
+```bash
+./gradlew shadowJar
+java -jar build/libs/users-api-1.0-SNAPSHOT-all.jar
+curl localhost:8000
 ```
 
-## To do
-* Document HMAC-signing (it is required for all requests)
+### Running directly
+
+```bash
+./gradlew runShadow
+```
+
+## Configuration
+
+A file named `overrides.properties` must be present in the working directory
+and override needed properties from `defaults.properties`.
+
+## Endpoints actually in use
+
+As of Dec 2018.
+
+- `/users-api/simpleauth` (intern + simplesaml)
+- `/users-api/group/XX` (intern)
+- `/users-api/groups` (intern)
+- `/users-api/user/XX` (intern + simplesaml)
+- `/users-api/user/XX?grouplevel=2` (intern)
+- `/users-api/users` (intern)
+- `/users-api/users?emails=XX` (intern + simplesaml)
+- `/users-api/users?grouplevel=1` (intern)

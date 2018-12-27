@@ -1,0 +1,22 @@
+{"status":{"code":200,"text":"OK"},"result":{
+  "id": 1234,
+  "unique_id": "halvargimnes",
+  "username": "halvargimnes",
+  "email": "halvargimnes@foreningenbs.no",
+  "realname": "Halvar Gimnes",
+  "phone": null,
+  "groups_relation": {
+    "beboer": [
+      "beboer"
+    ]
+  },
+  "groupsowner_relation": {},
+  "groups": [
+    {
+      "id": 1234,
+      "unique_id": "beboer",
+      "name": "beboer",
+      "description": null
+    }
+  ]
+}}
