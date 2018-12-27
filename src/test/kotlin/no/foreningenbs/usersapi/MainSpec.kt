@@ -1,5 +1,8 @@
 package no.foreningenbs.usersapi
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import no.foreningenbs.usersapi.hmac.Hmac
 import org.amshove.kluent.shouldEqual
 import org.http4k.core.ContentType
@@ -124,7 +127,7 @@ object MainSpec : Spek({
         }
       }
 
-      describe("POST /simpleauth") {
+      describe("POST /simpleauth using urlencoded form") {
         describe("using invalid credentials") {
           val res by memoized(mode = CachingMode.GROUP) {
             val req = Request(Method.POST, "/simpleauth")
@@ -146,6 +149,33 @@ object MainSpec : Spek({
               .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
               .form("username", MOCK_AUTH_VALID_USERNAME)
               .form("password", MOCK_AUTH_VALID_PASSWORD)
+              .withHmac()
+            app(req)
+          }
+
+          it("should be successful") {
+            res.status shouldEqual Status.OK
+          }
+
+          it("should return expected data") {
+            res.bodyString() matchWithSnapshot "POST_simpleauth_body"
+          }
+        }
+      }
+
+      describe("POST /simpleauth using JSON body") {
+        describe("using valid credentials") {
+          val res by memoized(mode = CachingMode.GROUP) {
+            val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
+            val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter<Map<String, String>>(type)
+            val body = adapter.toJson(mapOf(
+              "username" to MOCK_AUTH_VALID_USERNAME,
+              "password" to MOCK_AUTH_VALID_PASSWORD
+            ))
+
+            val req = Request(Method.POST, "/simpleauth")
+              .with(CONTENT_TYPE of ContentType.APPLICATION_JSON)
+              .body(body)
               .withHmac()
             app(req)
           }
