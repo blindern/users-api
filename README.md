@@ -22,7 +22,6 @@ database.
 ## TODO
 
 - improved CI setup
-- docker setup
 - replace HMAC with simpler bearer token
 - simpler v2 version of the api
 - deploy as app and test in prod
