@@ -3,8 +3,14 @@ set -eu
 
 docker --version
 
+extra=""
+if [ "$CIRCLE_BRANCH" != "master" ]; then
+  extra="-$(echo "$CIRCLE_BRANCH" | sed 's/[^a-zA-Z0-9\-]//g')"
+fi
+
 repo="blindern/users-api"
-tag=$(date -u +%Y%m%d-%H%M)-$CIRCLE_BUILD_NUM
+tag="$(date -u +%Y%m%d-%H%M)$extra-$CIRCLE_BUILD_NUM"
+
 echo $repo >.dockerrepo
 echo $tag >.dockertag
 
