@@ -1,5 +1,7 @@
 # users-api
 
+[![CircleCI](https://circleci.com/gh/blindern/users-api.svg?style=svg)](https://circleci.com/gh/blindern/users-api)
+
 API between user database and other services. The objective is to have an API
 so that the underlying user database can be swapped from LDAP to other types,
 if necessary.
