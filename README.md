@@ -63,3 +63,9 @@ As of Dec 2018.
 - `/users-api/users` (intern)
 - `/users-api/users?emails=XX` (intern + simplesaml)
 - `/users-api/users?grouplevel=1` (intern)
+
+## Checking for dependency updates
+
+```bash
+./gradlew dependencyUpdates
+```

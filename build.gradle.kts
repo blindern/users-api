@@ -4,12 +4,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.jvm.tasks.Jar
 import java.io.ByteArrayOutputStream
 import java.time.Instant
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
   application
   kotlin("jvm") version "1.3.11"
   id("com.github.johnrengelman.shadow") version "4.0.3"
   id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
+  id("com.github.ben-manes.versions") version "0.20.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
 }
 
@@ -98,4 +100,19 @@ tasks.register("buildDocker", Exec::class.java) {
 tasks.register("runDocker", Exec::class.java) {
   dependsOn("buildDocker")
   commandLine("./scripts/docker-run-image.sh".split(" "))
+}
+
+tasks.withType<DependencyUpdatesTask> {
+  resolutionStrategy {
+    componentSelection {
+      all {
+        val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview", "eap")
+          .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
+          .any { it.matches(candidate.version) }
+        if (rejected) {
+          reject("Release candidate")
+        }
+      }
+    }
+  }
 }
