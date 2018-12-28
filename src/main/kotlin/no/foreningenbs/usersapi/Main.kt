@@ -13,11 +13,9 @@ import no.foreningenbs.usersapi.hmac.HmacFilter
 import no.foreningenbs.usersapi.ldap.Ldap
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
-import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
-import org.http4k.core.Status.Companion.NOT_IMPLEMENTED
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
@@ -60,23 +58,24 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
     },
     "/health" bind GET to HealthController().handler,
     hmacFilter
-      .then(WrappedResponse.filter)
       .then(routes(
         "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
-        "/users" bind GET to ListUsers(dataProvider).handler,
-        "/users" bind POST to { Response(NOT_IMPLEMENTED) },
-        "/user/{username}" bind GET to GetUser(dataProvider).handler,
-        "/user/{username}" bind POST to { Response(NOT_IMPLEMENTED) },
-        "/user/{username}" bind DELETE to { Response(NOT_IMPLEMENTED) },
-        "/user/{username}/groups" bind POST to { Response(NOT_IMPLEMENTED) },
-        "/user/{username}/groups" bind DELETE to { Response(NOT_IMPLEMENTED) },
-        "/groups" bind GET to ListGroups(dataProvider).handler,
-        "/groups" bind DELETE to { Response(NOT_IMPLEMENTED) },
-        "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
-        "/group/{groupname}" bind POST to { Response(NOT_IMPLEMENTED) },
-        "/group/{groupname}" bind DELETE to { Response(NOT_IMPLEMENTED) },
-        "/auth" bind POST to { Response(NOT_IMPLEMENTED) },
-        "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
+        WrappedResponse.filter.then(
+          routes(
+            "/users" bind GET to ListUsers(dataProvider).handler,
+            "/user/{username}" bind GET to GetUser(dataProvider).handler,
+            "/groups" bind GET to ListGroups(dataProvider).handler,
+            "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
+            "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
+          )
+        ),
+        "/v2" bind routes(
+          "/users" bind GET to ListUsers(dataProvider).handler,
+          "/users/{username}" bind GET to GetUser(dataProvider).handler,
+          "/groups" bind GET to ListGroups(dataProvider).handler,
+          "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
+          "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
+        )
       ))
   )
 
