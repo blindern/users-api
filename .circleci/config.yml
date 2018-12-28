@@ -23,7 +23,7 @@ jobs:
           root: .
           paths:
             - build/libs/*.jar
-  build-docker:
+  build-and-publish-docker:
     machine: true
     steps:
       - checkout
@@ -34,10 +34,10 @@ jobs:
       - run: scripts/docker-push-image.sh
 workflows:
   version: 2
-  my-workflow:
+  build-and-publish:
     jobs:
       - build-jar
-      - build-docker:
+      - build-and-publish-docker:
           context: Docker Hub
           requires:
             - build-jar
