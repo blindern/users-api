@@ -1,5 +1,6 @@
 package no.foreningenbs.usersapi
 
+import mu.KotlinLogging
 import no.foreningenbs.usersapi.api.InvalidateCache
 import no.foreningenbs.usersapi.api.auth.SimpleAuth
 import no.foreningenbs.usersapi.api.groups.GetGroup
@@ -10,6 +11,7 @@ import no.foreningenbs.usersapi.health.HealthController
 import no.foreningenbs.usersapi.hmac.Hmac
 import no.foreningenbs.usersapi.hmac.HmacFilter
 import no.foreningenbs.usersapi.ldap.Ldap
+import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
@@ -24,6 +26,8 @@ import org.http4k.routing.routes
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
+val logger = KotlinLogging.logger {}
+
 fun main(args: Array<String>) {
   val ldap = Ldap(Config)
   val dataProvider = DataProvider(Config, ldap)
@@ -31,9 +35,18 @@ fun main(args: Array<String>) {
   server(ldap, dataProvider).start()
 }
 
+val loggingFilter = Filter { next ->
+  { req ->
+    val res = next(req)
+    logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
+    res
+  }
+}
+
 fun server(ldap: Ldap, dataProvider: DataProvider) =
   ServerFilters.GZip()
     .then(ServerFilters.CatchAll())
+    .then(loggingFilter)
     .then(app(ldap, dataProvider))
     .asServer(Jetty(8000))
 
