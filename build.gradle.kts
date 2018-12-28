@@ -85,3 +85,21 @@ tasks.withType<Test> {
     includeEngines("spek2")
   }
 }
+
+tasks.register("buildDocker") {
+  dependsOn("shadowJar")
+  doLast {
+    exec {
+      commandLine("docker build -t users-api .".split(" "))
+    }
+  }
+}
+
+tasks.register("runDocker") {
+  dependsOn("buildDocker")
+  doLast {
+    exec {
+      commandLine("docker run -p 8000:8000 users-api".split(" "))
+    }
+  }
+}
