@@ -86,20 +86,16 @@ tasks.withType<Test> {
   }
 }
 
-tasks.register("buildDocker") {
+tasks.register("buildDocker", Exec::class.java) {
   dependsOn("shadowJar")
-  doLast {
-    exec {
-      commandLine("docker build -t users-api .".split(" "))
-    }
-  }
+  environment(
+    "CIRCLE_BRANCH" to "local-test",
+    "CIRCLE_BUILD_NUM" to "0"
+  )
+  commandLine("./scripts/docker-build-image.sh")
 }
 
-tasks.register("runDocker") {
+tasks.register("runDocker", Exec::class.java) {
   dependsOn("buildDocker")
-  doLast {
-    exec {
-      commandLine("docker run -p 8000:8000 users-api".split(" "))
-    }
-  }
+  commandLine("./scripts/docker-run-image.sh".split(" "))
 }
