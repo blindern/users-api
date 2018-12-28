@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:11
+FROM openjdk:11-jre-slim
 
 COPY build/libs/users-api-1.0-SNAPSHOT-all.jar /users-api.jar
 
