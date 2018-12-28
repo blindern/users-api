@@ -4,7 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.http4k.core.ContentType.Companion.APPLICATION_JSON
 import org.http4k.core.Filter
-import org.http4k.lens.Header.Common.CONTENT_TYPE
+import org.http4k.lens.Header.CONTENT_TYPE
 
 object WrappedResponse {
   private val moshi = Moshi.Builder()

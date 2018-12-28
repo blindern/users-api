@@ -24,7 +24,7 @@ class SimpleAuth(private val ldap: Ldap, private val dataProvider: DataProvider)
   private val bodyLens = Body.auto<Content>().toLens()
 
   val handler = handler@{ req: Request ->
-    val body = if (Header.Common.CONTENT_TYPE(req) == APPLICATION_FORM_URLENCODED) {
+    val body = if (Header.CONTENT_TYPE(req) == APPLICATION_FORM_URLENCODED) {
       val strictFormBody = Body.webForm(Validator.Strict, usernameField, passwordField).toLens()
       val validForm = strictFormBody.extract(req)
       Content(
