@@ -1,12 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import de.fuerstenau.gradle.buildconfig.BuildConfigSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.jvm.tasks.Jar
+import java.io.ByteArrayOutputStream
+import java.time.Instant
 
 plugins {
   application
   kotlin("jvm") version "1.3.11"
   id("com.github.johnrengelman.shadow") version "4.0.3"
   id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
+  id("de.fuerstenau.buildconfig") version "1.1.8"
 }
 
 group = "no.foreningenbs"
@@ -16,6 +20,20 @@ buildscript {
   dependencies {
     classpath("com.karumi.kotlinsnapshot:plugin:2.0.0")
   }
+}
+
+fun getGitHash(): String {
+  val stdout = ByteArrayOutputStream()
+  exec {
+    commandLine("git", "rev-parse", "HEAD")
+    standardOutput = stdout
+  }
+  return stdout.toString().trim()
+}
+
+configure<BuildConfigSourceSet> {
+  buildConfigField("String", "BUILD_TIME", Instant.now().toString())
+  buildConfigField("String", "GIT_COMMIT", getGitHash())
 }
 
 repositories {

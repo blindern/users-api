@@ -6,6 +6,7 @@ import no.foreningenbs.usersapi.api.groups.GetGroup
 import no.foreningenbs.usersapi.api.groups.ListGroups
 import no.foreningenbs.usersapi.api.users.GetUser
 import no.foreningenbs.usersapi.api.users.ListUsers
+import no.foreningenbs.usersapi.health.HealthController
 import no.foreningenbs.usersapi.hmac.Hmac
 import no.foreningenbs.usersapi.hmac.HmacFilter
 import no.foreningenbs.usersapi.ldap.Ldap
@@ -44,6 +45,7 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
     "/" bind GET to {
       Response(OK).body("https://github.com/blindern/users-api")
     },
+    "/health" bind GET to HealthController().handler,
     hmacFilter
       .then(WrappedResponse.filter)
       .then(routes(
