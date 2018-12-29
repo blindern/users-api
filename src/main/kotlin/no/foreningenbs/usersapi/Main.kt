@@ -16,6 +16,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
+import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
@@ -79,6 +80,9 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
       ))
   )
 
-  return ServerFilters.CatchLensFailure()
+  return ServerFilters.CatchLensFailure {
+    logger.debug("Lens failure: ${it.message}", it)
+    Response(BAD_REQUEST.description(it.failures.joinToString("; ")))
+  }
     .then(routes)
 }
