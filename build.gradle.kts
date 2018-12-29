@@ -66,6 +66,9 @@ dependencies {
   testRuntimeOnly("org.spekframework.spek2", "spek-runner-junit5", "2.0.0-rc.1")
 }
 
+// The idea plugin makes generated BuildConfig resolved
+apply(plugin = "idea")
+
 apply(plugin = "com.karumi.kotlin-snapshot")
 
 tasks.withType<KotlinCompile> {
