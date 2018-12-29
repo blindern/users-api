@@ -51,15 +51,24 @@ class Hmac(private val timeout: Long, private val key: String) {
       time.toString(),
       method.toString(),
       uri.toString(),
-      flatVars
+      // In the old PHP version, an empty map results in an empty array.
+      if (flatVars.isEmpty()) emptyList<String>()
+      else flatVars
     )
 
-    val data = moshi.adapter(List::class.java).toJson(dataList)
+    // Escape forward slash as PHPs json_encode also does it,
+    // as we need to maintain compatibility with old HMAC code.
+    val data = moshi.adapter(List::class.java).toJson(dataList).replace("/", "\\/")
 
     val hasher = Mac.getInstance("HmacSHA256")
     hasher.init(SecretKeySpec(key.toByteArray(), "HmacSHA256"))
-    return hasher.doFinal(data.toByteArray())!!.contentToString()
+    return hex(hasher.doFinal(data.toByteArray())!!)
   }
+
+  private fun hex(data: ByteArray) =
+    data.fold(StringBuilder()) { acc, next ->
+      acc.append(String.format("%02x", next))
+    }.toString().toLowerCase()
 
   companion object {
     const val HASH_HEADER = "X-API-Hash"
