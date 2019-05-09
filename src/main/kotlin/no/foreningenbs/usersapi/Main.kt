@@ -17,6 +17,7 @@ import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
@@ -36,15 +37,19 @@ fun main(args: Array<String>) {
 
 val loggingFilter = Filter { next ->
   { req ->
-    val res = next(req)
-    logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
-    res
+    try {
+      val res = next(req)
+      logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
+      res
+    } catch (e: Throwable) {
+      logger.error("Exception caught for: ${req.method} ${req.uri} (agent: ${req.header("user-agent")})", e)
+      Response(INTERNAL_SERVER_ERROR).body("Request failed. See logs")
+    }
   }
 }
 
 fun server(ldap: Ldap, dataProvider: DataProvider) =
   ServerFilters.GZip()
-    .then(ServerFilters.CatchAll())
     .then(loggingFilter)
     .then(app(ldap, dataProvider))
     .asServer(Jetty(8000))
