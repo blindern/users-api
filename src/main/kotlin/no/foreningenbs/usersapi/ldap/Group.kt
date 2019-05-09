@@ -74,12 +74,16 @@ data class Group(
       val data = dataProvider.getData()
       map["members_data"] = data.groupMembers[reference]
         ?.keys
-        ?.map {
-          it.username to data.users[it]!!.toResponse(
-            dataProvider,
-            withRelations = true,
-            withGroupsDetailed = false
-          )
+        ?.mapNotNull {
+          // Some user references point to invalid users. Typically because the
+          // user has been changed or removed after the reference was added.
+          data.users[it]?.let { user ->
+            it.username to user.toResponse(
+              dataProvider,
+              withRelations = true,
+              withGroupsDetailed = false
+            )
+          }
         }
         ?.toMap()
         ?: emptyMap<String, Any>()
