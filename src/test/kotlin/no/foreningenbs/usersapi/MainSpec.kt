@@ -25,7 +25,7 @@ object MainSpec : Spek({
 
       describe("hmac protected route") {
         describe("request with missing hmac") {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             app(Request(Method.GET, "/users"))
           }
 
@@ -35,7 +35,7 @@ object MainSpec : Spek({
         }
 
         describe("request with bad hmac") {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             val hmac = Hmac(100, "some invalid key")
             fun Request.withHmac() = hmac.withHmac(this)
             app(Request(Method.GET, "/users").withHmac())
@@ -113,7 +113,7 @@ object MainSpec : Spek({
         )
       ).map { row ->
         describe(row.title) {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             app(row.requestBuilder().withHmac())
           }
 
@@ -129,7 +129,7 @@ object MainSpec : Spek({
 
       describe("POST /simpleauth using urlencoded form") {
         describe("using invalid credentials") {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             val req = Request(Method.POST, "/simpleauth")
               .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
               .form("username", "somethingInvalid")
@@ -144,7 +144,7 @@ object MainSpec : Spek({
         }
 
         describe("using valid credentials") {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             val req = Request(Method.POST, "/simpleauth")
               .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
               .form("username", MOCK_AUTH_VALID_USERNAME)
@@ -165,7 +165,7 @@ object MainSpec : Spek({
 
       describe("POST /simpleauth using JSON body") {
         describe("using valid credentials") {
-          val res by memoized(mode = CachingMode.GROUP) {
+          val res by memoized(mode = CachingMode.EACH_GROUP) {
             val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
             val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter<Map<String, String>>(type)
             val body = adapter.toJson(mapOf(
