@@ -3,6 +3,7 @@ package no.foreningenbs.usersapi
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
+import com.natpryce.konfig.booleanType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import java.nio.file.Paths
@@ -44,4 +45,8 @@ object Config {
   val cacheTimeout: Duration = Duration.of(300L, ChronoUnit.SECONDS)
   val hmacKey = config[Key("users-api.hmac-key", stringType)]
   const val hmacTimeout = 300L // allow 5 minutes time delay
+
+  // If set to false, all unrestricted access will be granted.
+  // Only set false if needed during local development/testing.
+  val enforceAuth = config[Key("users-api.enforce-auth", booleanType)]
 }

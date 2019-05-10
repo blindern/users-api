@@ -9,7 +9,6 @@ import no.foreningenbs.usersapi.api.users.GetUser
 import no.foreningenbs.usersapi.api.users.ListUsers
 import no.foreningenbs.usersapi.health.HealthController
 import no.foreningenbs.usersapi.hmac.Hmac
-import no.foreningenbs.usersapi.hmac.HmacFilter
 import no.foreningenbs.usersapi.ldap.Ldap
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
@@ -26,7 +25,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
-val logger = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 fun main(args: Array<String>) {
   val ldap = Ldap(Config)
@@ -56,14 +55,21 @@ fun server(ldap: Ldap, dataProvider: DataProvider) =
 
 fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
 
-  val hmacFilter = HmacFilter(Hmac(Config.hmacTimeout, Config.hmacKey)).filter
+  val authFilter = AuthFilter(
+    Hmac(Config.hmacTimeout, Config.hmacKey),
+    // Currently using hmac key as also directly API key. We might
+    // want to revisit this later, e.g. giving each application
+    // its own key.
+    Config.hmacKey,
+    Config.enforceAuth
+  ).filter
 
   val routes = routes(
     "/" bind GET to {
       Response(OK).body("https://github.com/blindern/users-api")
     },
     "/health" bind GET to HealthController().handler,
-    hmacFilter
+    authFilter
       .then(routes(
         "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
         WrappedResponse.filter.then(

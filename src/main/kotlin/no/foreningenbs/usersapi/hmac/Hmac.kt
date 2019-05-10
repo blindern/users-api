@@ -2,8 +2,8 @@ package no.foreningenbs.usersapi.hmac
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import no.foreningenbs.usersapi.hmac.HmacFilter.Companion.hashHeader
-import no.foreningenbs.usersapi.hmac.HmacFilter.Companion.timeHeader
+import no.foreningenbs.usersapi.AuthFilter.Companion.hmacHashHeader
+import no.foreningenbs.usersapi.AuthFilter.Companion.hmacTimeHeader
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Uri
@@ -28,10 +28,10 @@ class Hmac(private val timeout: Long, private val key: String) {
 
     return req
       .with(
-        hashHeader of
+        hmacHashHeader of
           generateHash(time, req.method, req.uri, req.formAsMap())
       )
-      .with(timeHeader of time)
+      .with(hmacTimeHeader of time)
   }
 
   fun generateHash(

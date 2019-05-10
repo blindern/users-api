@@ -9,6 +9,15 @@ if necessary.
 All services having access to this resource have full access to the user
 database.
 
+## Testing the endpoint
+
+```bash
+curl \
+  -H "Authorization: Bearer $(cat /fbs/users-api-key)" \
+  https://foreningenbs.no/users-api/groups \
+  | jq .
+```
+
 ## Tech used
 
 - JVM as runtime
@@ -23,7 +32,7 @@ database.
 
 ## TODO
 
-- replace HMAC with simpler bearer token
+- replace HMAC with simpler bearer token (initial bearer-token version done)
 - simpler v2 version of the api
 
 ## Linting and testing

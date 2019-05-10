@@ -30,7 +30,7 @@ object MainSpec : Spek({
           }
 
           it("should fail") {
-            res.status shouldEqual Status.BAD_REQUEST
+            res.status shouldEqual Status.UNAUTHORIZED
           }
         }
 
