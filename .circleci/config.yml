@@ -9,16 +9,16 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v2-dependencies-{{ checksum "build.gradle.kts" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - run: gradle dependencies
+            - v2-dependencies-
+      - run: ./gradlew dependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
-      - run: gradle test ktlintCheck
-      - run: gradle shadowJar
+          key: v2-dependencies-{{ checksum "build.gradle.kts" }}
+      - run: ./gradlew test ktlintCheck
+      - run: ./gradlew shadowJar
       - persist_to_workspace:
           root: .
           paths:
