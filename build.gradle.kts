@@ -40,7 +40,7 @@ configure<BuildConfigSourceSet> {
 repositories {
   mavenCentral()
   jcenter()
-  maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
+  maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
   maven { setUrl("https://dl.bintray.com/spekframework/spek-dev") }
 }
 
