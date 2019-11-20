@@ -8,7 +8,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
   application
   kotlin("jvm") version "1.3.31"
-  id("com.github.johnrengelman.shadow") version "5.0.0"
+  id("com.github.johnrengelman.shadow") version "5.2.0"
   id("org.jlleitschuh.gradle.ktlint") version "8.2.0"
   id("com.github.ben-manes.versions") version "0.21.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
