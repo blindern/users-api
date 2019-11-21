@@ -1,8 +1,5 @@
 package no.foreningenbs.usersapi.ldap
 
-import no.foreningenbs.usersapi.Config
-import no.foreningenbs.usersapi.ldap.Reference.GroupRef
-import no.foreningenbs.usersapi.ldap.Reference.UserRef
 import java.util.Enumeration
 import java.util.Hashtable
 import javax.naming.AuthenticationException
@@ -14,6 +11,9 @@ import javax.naming.ldap.InitialLdapContext
 import javax.naming.ldap.LdapContext
 import javax.naming.ldap.StartTlsRequest
 import javax.naming.ldap.StartTlsResponse
+import no.foreningenbs.usersapi.Config
+import no.foreningenbs.usersapi.ldap.Reference.GroupRef
+import no.foreningenbs.usersapi.ldap.Reference.UserRef
 
 class Ldap(private val config: Config) {
   private val dnPattern = "^(.+?)=(.+?),(.+)$".toRegex().toPattern()

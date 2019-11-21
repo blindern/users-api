@@ -1,15 +1,15 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.fuerstenau.gradle.buildconfig.BuildConfigSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
 import java.time.Instant
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   application
   kotlin("jvm") version "1.3.31"
   id("com.github.johnrengelman.shadow") version "5.2.0"
-  id("org.jlleitschuh.gradle.ktlint") version "8.2.0"
+  id("org.jlleitschuh.gradle.ktlint") version "9.1.1"
   id("com.github.ben-manes.versions") version "0.27.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
 }
