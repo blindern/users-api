@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   application
-  kotlin("jvm") version "1.3.31"
+  id("org.jetbrains.kotlin.jvm") version "1.3.31"
   id("com.github.johnrengelman.shadow") version "5.2.0"
   id("org.jlleitschuh.gradle.ktlint") version "9.1.1"
   id("com.github.ben-manes.versions") version "0.27.0"
@@ -46,23 +46,23 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib-jdk8"))
-  implementation("org.http4k", "http4k-core", "3.141.0")
-  implementation("org.http4k", "http4k-server-jetty", "3.141.0")
-  implementation("org.http4k", "http4k-format-moshi", "3.141.0")
-  implementation("com.natpryce", "konfig", "1.6.10.0")
-  implementation("com.squareup.moshi", "moshi", "1.8.0")
-  implementation("com.squareup.moshi", "moshi-kotlin", "1.8.0")
-  implementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.3.31")
-  implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.3.31")
-  implementation("com.github.ben-manes.caffeine", "caffeine", "2.7.0")
-  implementation("ch.qos.logback", "logback-classic", "1.2.3")
-  implementation("ch.qos.logback.contrib", "logback-json-classic", "0.1.5")
-  implementation("de.gessnerfl.logback", "logback-gson-formatter", "0.1.0")
-  implementation("io.github.microutils", "kotlin-logging", "1.6.26")
-  testImplementation("org.amshove.kluent", "kluent", "1.49")
-  testImplementation("org.spekframework.spek2", "spek-dsl-jvm", "2.0.4")
-  testImplementation("io.mockk", "mockk", "1.9.3")
-  testRuntimeOnly("org.spekframework.spek2", "spek-runner-junit5", "2.0.4")
+  implementation("org.http4k:http4k-core:3.141.0")
+  implementation("org.http4k:http4k-server-jetty:3.141.0")
+  implementation("org.http4k:http4k-format-moshi:3.141.0")
+  implementation("com.natpryce:konfig:1.6.10.0")
+  implementation("com.squareup.moshi:moshi:1.8.0")
+  implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.31")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.31")
+  implementation("com.github.ben-manes.caffeine:caffeine:2.7.0")
+  implementation("ch.qos.logback:logback-classic:1.2.3")
+  implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
+  implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
+  implementation("io.github.microutils:kotlin-logging:1.6.26")
+  testImplementation("org.amshove.kluent:kluent:1.49")
+  testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.4")
+  testImplementation("io.mockk:mockk:1.9.3")
+  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.4")
 }
 
 // The idea plugin makes generated BuildConfig resolved
