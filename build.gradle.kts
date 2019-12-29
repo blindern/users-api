@@ -53,7 +53,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.9.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.9.2")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.31")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.31")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.61")
   implementation("com.github.ben-manes.caffeine:caffeine:2.8.0")
   implementation("ch.qos.logback:logback-classic:1.2.3")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
