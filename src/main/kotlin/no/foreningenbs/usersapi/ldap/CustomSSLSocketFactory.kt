@@ -15,14 +15,14 @@ class CustomSSLSocketFactory : SSLSocketFactory() {
     val ks = KeyStore.getInstance(KeyStore.getDefaultType())
 
     val certificateFactoryX509 = CertificateFactory.getInstance("X.509")
-    val certificate = javaClass.classLoader.getResource("foreningenbs_slapd_cert.pem")
+    val certificate = javaClass.classLoader.getResource("ca.crt")!!
       .openStream()
       .use {
         certificateFactoryX509.generateCertificate(it)
       }
 
     ks.load(null, null)
-    ks.setCertificateEntry("ldapmaster.vpn.foreningenbs.no", certificate)
+    ks.setCertificateEntry("ca", certificate)
 
     return ks
   }
