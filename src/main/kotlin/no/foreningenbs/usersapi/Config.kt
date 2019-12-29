@@ -20,7 +20,7 @@ object Config {
       ConfigurationProperties.fromResource("defaults.properties")
 
   class Ldap {
-    val server = "ldapmaster.zt.foreningenbs.no"
+    val server = "ldap.zt.foreningenbs.no"
     val groupDn = "ou=Groups,dc=foreningenbs,dc=no"
     val userDn = "ou=Users,dc=foreningenbs,dc=no"
     val bindDn = "uid=USERNAME,ou=Users,dc=foreningenbs,dc=no"

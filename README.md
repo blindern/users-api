@@ -52,7 +52,7 @@ We use Gradle as build system. You can test it by
 ./gradlew -v
 ```
 
-The LDAP server is located at `ldapmaster.zt.foreningenbs.no`. To be able
+The LDAP servers are located at `ldap.zt.foreningenbs.no`. To be able
 to connect to it you must be on the ZeroTier VPN network.
 See https://github.com/blindern/drift/tree/master/zerotier
 
