@@ -9,7 +9,7 @@ plugins {
   application
   id("org.jetbrains.kotlin.jvm") version "1.3.70-eap-184"
   id("com.github.johnrengelman.shadow") version "5.2.0"
-  id("org.jlleitschuh.gradle.ktlint") version "9.2.0"
+  id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
   id("com.github.ben-manes.versions") version "0.27.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
 }
