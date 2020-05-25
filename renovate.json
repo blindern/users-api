@@ -7,6 +7,5 @@
       "packagePatterns": ["^org.http4k:http4k-"],
       "groupName": "http4k"
     }
-  ],
-  "masterIssue": true
+  ]
 }
