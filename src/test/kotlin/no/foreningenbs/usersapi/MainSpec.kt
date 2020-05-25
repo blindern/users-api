@@ -4,7 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import no.foreningenbs.usersapi.hmac.Hmac
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.http4k.core.ContentType
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -30,7 +30,7 @@ object MainSpec : Spek({
           }
 
           it("should fail") {
-            res.status shouldEqual Status.UNAUTHORIZED
+            res.status shouldBeEqualTo Status.UNAUTHORIZED
           }
         }
 
@@ -42,7 +42,7 @@ object MainSpec : Spek({
           }
 
           it("should fail") {
-            res.status shouldEqual Status.UNAUTHORIZED
+            res.status shouldBeEqualTo Status.UNAUTHORIZED
           }
         }
       }
@@ -118,7 +118,7 @@ object MainSpec : Spek({
           }
 
           it("should return expected status") {
-            res.status shouldEqual row.status
+            res.status shouldBeEqualTo row.status
           }
 
           it("should return expected body") {
@@ -139,7 +139,7 @@ object MainSpec : Spek({
           }
 
           it("should fail") {
-            res.status shouldEqual Status.UNAUTHORIZED
+            res.status shouldBeEqualTo Status.UNAUTHORIZED
           }
         }
 
@@ -154,7 +154,7 @@ object MainSpec : Spek({
           }
 
           it("should be successful") {
-            res.status shouldEqual Status.OK
+            res.status shouldBeEqualTo Status.OK
           }
 
           it("should return expected data") {
@@ -181,7 +181,7 @@ object MainSpec : Spek({
           }
 
           it("should be successful") {
-            res.status shouldEqual Status.OK
+            res.status shouldBeEqualTo Status.OK
           }
 
           it("should return expected data") {
