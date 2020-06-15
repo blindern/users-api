@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   application
   id("org.jetbrains.kotlin.jvm") version "1.3.72"
-  id("com.github.johnrengelman.shadow") version "5.2.0"
+  id("com.github.johnrengelman.shadow") version "6.0.0"
   id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
   id("com.github.ben-manes.versions") version "0.28.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
