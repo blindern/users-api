@@ -19,7 +19,7 @@ version = "1.0-SNAPSHOT"
 
 buildscript {
   dependencies {
-    classpath("com.karumi.kotlinsnapshot:plugin:2.2.0")
+    classpath("com.karumi.kotlinsnapshot:plugin:2.2.2")
   }
 }
 
