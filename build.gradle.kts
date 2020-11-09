@@ -10,7 +10,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "1.4.10"
   id("com.github.johnrengelman.shadow") version "6.1.0"
   id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
-  id("com.github.ben-manes.versions") version "0.35.0"
+  id("com.github.ben-manes.versions") version "0.36.0"
   id("de.fuerstenau.buildconfig") version "1.1.8"
 }
 
