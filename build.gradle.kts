@@ -62,7 +62,7 @@ dependencies {
   testImplementation("org.amshove.kluent:kluent:1.64")
   testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.14")
   testImplementation("io.mockk:mockk:1.10.2")
-  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.13")
+  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.14")
 }
 
 // The idea plugin makes generated BuildConfig resolved
