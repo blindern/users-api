@@ -50,7 +50,7 @@ dependencies {
   implementation("org.http4k:http4k-server-jetty:3.285.2")
   implementation("org.http4k:http4k-format-moshi:3.285.2")
   implementation("com.natpryce:konfig:1.6.10.0")
-  implementation("com.squareup.moshi:moshi:1.11.0")
+  implementation("com.squareup.moshi:moshi:1.12.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.11.0")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
