@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim@sha256:b4cb057e8e7f534c3ae279b5f3205e28d6520c0bdb1f80bbf61c0b8d2c00f983
+FROM openjdk:11-jre-slim@sha256:550345cd237e42a5772b8eb9c76cb7020c62645de5da77649f821e3c556f38d1
 
 COPY build/libs/users-api-1.0-SNAPSHOT-all.jar /users-api.jar
 
