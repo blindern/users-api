@@ -59,7 +59,7 @@ dependencies {
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
   implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
   implementation("io.github.microutils:kotlin-logging:1.12.5")
-  testImplementation("org.amshove.kluent:kluent:1.66")
+  testImplementation("org.amshove.kluent:kluent:1.67")
   testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.15")
   testImplementation("io.mockk:mockk:1.11.0")
   testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.15")
