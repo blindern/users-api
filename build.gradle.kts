@@ -46,9 +46,9 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib-jdk8"))
-  implementation("org.http4k:http4k-core:3.285.2")
-  implementation("org.http4k:http4k-server-jetty:3.285.2")
-  implementation("org.http4k:http4k-format-moshi:3.285.2")
+  implementation("org.http4k:http4k-core:4.27.0.0")
+  implementation("org.http4k:http4k-server-jetty:4.27.0.0")
+  implementation("org.http4k:http4k-format-moshi:4.27.0.0")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.12.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
