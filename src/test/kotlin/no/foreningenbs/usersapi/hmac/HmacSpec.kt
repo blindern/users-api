@@ -1,6 +1,6 @@
 package no.foreningenbs.usersapi.hmac
 
-import org.amshove.kluent.shouldBeEqualTo
+import io.kotest.matchers.shouldBe
 import org.http4k.core.Method
 import org.http4k.core.Uri
 import org.spekframework.spek2.Spek
@@ -19,7 +19,7 @@ object HmacSpec : Spek({
 
       val expected = "8623a8a04b33f9e02e0eb0654ea658420b2da418b5755a72d4cc231649c1aa7a"
 
-      generated shouldBeEqualTo expected
+      generated shouldBe expected
     }
   }
 })

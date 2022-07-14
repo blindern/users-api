@@ -18,7 +18,7 @@ database.
 - Caffeine as cache library: https://github.com/ben-manes/caffeine
 - Moshi for Json serialization: https://github.com/square/moshi
 - Spek 2 for testing: https://spekframework.org/
-- Kluent for assertions: https://github.com/MarkusAmshove/Kluent
+- Kotest for assertions: https://kotest.io/
 - MockK for mocking: https://mockk.io/
 
 ## Development
