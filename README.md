@@ -1,20 +1,13 @@
 # users-api
 
+https://foreningenbs.no/users-api/
+
 API between user database and other services. The objective is to have an API
 so that the underlying user database can be swapped from LDAP to other types,
 if necessary.
 
 All services having access to this resource have full access to the user
 database.
-
-## Testing the endpoint
-
-```bash
-curl \
-  -H "Authorization: Bearer $(cat /fbs/users-api-key)" \
-  https://foreningenbs.no/users-api/groups \
-  | jq .
-```
 
 ## Tech used
 
@@ -28,48 +21,25 @@ curl \
 - Kluent for assertions: https://github.com/MarkusAmshove/Kluent
 - MockK for mocking: https://mockk.io/
 
-## Production
-
-See https://github.com/blindern/drift/tree/master/services/users-api
-
-### Requirements
+## Development
 
 Ensure you have JDK 11 or newer on your system. If not install it through SDKMAN!
-
-https://sdkman.io
-
-```bash
-sdk install java
-```
-
-We use Gradle as build system. You can test it by
-
-```bash
-./gradlew -v
-```
+See https://sdkman.io
 
 The LDAP servers are located at `ldap.zt.foreningenbs.no`. To be able
-to connect to it you must be on the ZeroTier VPN network.
-See https://github.com/blindern/drift/tree/master/zerotier
+to connect to it, you must be on the ZeroTier VPN network.
+See https://github.com/blindern/drift/
 
-### Linting and testing
-
-```bash
-./gradlew ktlintCheck test
-```
-
-### Building and running
-
-```bash
-./gradlew shadowJar
-java -jar build/libs/users-api-1.0-SNAPSHOT-all.jar
-curl localhost:8000
-```
-
-### Running directly
+Running locally:
 
 ```bash
 ./gradlew runShadow
+```
+
+Lint and test:
+
+```bash
+./gradlew check
 ```
 
 ### Checking for dependency updates
@@ -77,6 +47,10 @@ curl localhost:8000
 ```bash
 ./gradlew dependencyUpdates
 ```
+
+## Production
+
+See https://github.com/blindern/drift/tree/master/services/users-api
 
 ## Configuration
 
@@ -87,6 +61,15 @@ The LDAP admin password can be located at
 https://foreningenbs.no/confluence/x/PgYf
 
 The HMAC key credential can be located at `/fbs/users-api-key` on athene.
+
+## Testing the endpoint
+
+```bash
+curl \
+  -H "Authorization: Bearer $(cat /fbs/users-api-key)" \
+  https://foreningenbs.no/users-api/groups \
+  | jq .
+```
 
 ## TODO
 
