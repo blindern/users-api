@@ -90,20 +90,6 @@ tasks.withType<Test> {
   }
 }
 
-tasks.register("buildDocker", Exec::class.java) {
-  dependsOn("shadowJar")
-  environment(
-    "CIRCLE_BRANCH" to "local-test",
-    "CIRCLE_BUILD_NUM" to "0"
-  )
-  commandLine("./scripts/docker-build-image.sh")
-}
-
-tasks.register("runDocker", Exec::class.java) {
-  dependsOn("buildDocker")
-  commandLine("./scripts/docker-run-image.sh".split(" "))
-}
-
 tasks.withType<DependencyUpdatesTask> {
   resolutionStrategy {
     componentSelection {
