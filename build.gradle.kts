@@ -32,7 +32,7 @@ dependencies {
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.13.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
   implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
   implementation("ch.qos.logback:logback-classic:1.2.11")
