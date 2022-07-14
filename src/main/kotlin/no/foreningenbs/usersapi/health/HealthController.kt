@@ -1,16 +1,17 @@
 package no.foreningenbs.usersapi.health
 
-import java.lang.management.ManagementFactory
-import java.net.InetAddress
-import java.net.UnknownHostException
-import java.time.Instant
-import no.foreningenbs.BuildConfig
 import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.with
 import org.http4k.format.Moshi.auto
+import java.io.File
+import java.lang.management.ManagementFactory
+import java.net.InetAddress
+import java.net.UnknownHostException
+import java.time.Instant
+import java.util.Properties
 
 class HealthController {
   private val bodyLens = Body.auto<HealthResponse>().toLens()
@@ -24,13 +25,8 @@ class HealthController {
   }
 }
 
-data class BuildInfo(
-  val timestamp: String = BuildConfig.BUILD_TIME,
-  val gitCommit: String = BuildConfig.GIT_COMMIT
-)
-
 data class HealthResponse(
-  val build: BuildInfo = BuildInfo(),
+  val build: HealthBuildInfo = getHealthBuildInfo(),
   val host: String =
     try {
       InetAddress.getLocalHost().hostName
@@ -40,3 +36,43 @@ data class HealthResponse(
   val startTime: String =
     Instant.ofEpochMilli(ManagementFactory.getRuntimeMXBean().startTime).toString()
 )
+
+data class HealthBuildInfo(
+  /**
+   * During local development this will be null.
+   */
+  val timestamp: Instant?,
+  val commit: String,
+  val branch: String,
+  val number: Int
+)
+
+/**
+ * Create [HealthBuildInfo] based on build.properties injected by the build.
+ */
+fun getHealthBuildInfo(): HealthBuildInfo {
+  val f = File("/build.properties")
+  if (!f.exists()) {
+    return HealthBuildInfo(
+      timestamp = null,
+      commit = "unknown",
+      branch = "unknown",
+      number = 0,
+    )
+  }
+
+  val properties = Properties().apply {
+    f.bufferedReader().use {
+      load(it)
+    }
+  }
+
+  return HealthBuildInfo(
+    timestamp = properties.getProperty("build.timestamp").let {
+      if (it.isEmpty()) null else Instant.parse(it)
+    },
+    commit = properties.getProperty("build.commit"),
+    branch = properties.getProperty("build.branch"),
+    number = properties.getProperty("build.number").toInt()
+  )
+}

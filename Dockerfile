@@ -1,6 +1,8 @@
-FROM openjdk:11-jre-slim@sha256:c653b8f18b8f3e9e5b801b72eba306c2574a8e3f499be4ac9315caeb3628e7d2
+FROM eclipse-temurin:17-jre-alpine@sha256:7171081bdd19d577be0ec4633e14888358cfa24e336c4aa068b81a1cc6fd19b1
 
 COPY build/libs/users-api-1.0-SNAPSHOT-all.jar /users-api.jar
+
+COPY build/build.properties /build.properties
 
 EXPOSE 8000
 CMD ["java", "-jar", "/users-api.jar"]

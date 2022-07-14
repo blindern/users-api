@@ -1,5 +1,8 @@
 package no.foreningenbs.usersapi.ldap
 
+import no.foreningenbs.usersapi.Config
+import no.foreningenbs.usersapi.ldap.Reference.GroupRef
+import no.foreningenbs.usersapi.ldap.Reference.UserRef
 import java.util.Enumeration
 import java.util.Hashtable
 import javax.naming.AuthenticationException
@@ -11,9 +14,6 @@ import javax.naming.ldap.InitialLdapContext
 import javax.naming.ldap.LdapContext
 import javax.naming.ldap.StartTlsRequest
 import javax.naming.ldap.StartTlsResponse
-import no.foreningenbs.usersapi.Config
-import no.foreningenbs.usersapi.ldap.Reference.GroupRef
-import no.foreningenbs.usersapi.ldap.Reference.UserRef
 
 class Ldap(private val config: Config) {
   private val dnPattern = "^(.+?)=(.+?),(.+)$".toRegex().toPattern()
@@ -108,10 +108,9 @@ class Ldap(private val config: Config) {
           )
         }
         .sortedBy { it.name }
-        .map {
-          GroupRef(it.name) to it
+        .associateBy {
+          GroupRef(it.name)
         }
-        .toMap()
     }
   }
 
@@ -158,7 +157,7 @@ class Ldap(private val config: Config) {
         .search(config.ldap.userDn, "(objectClass=posixAccount)", listOf(User.id))
         .map { it.attributes[User.id].first().toInt() }
         .filter { it < 60_000 }
-        .max() ?: 0
+        .maxOrNull() ?: 0
 
       max + 1
     }
@@ -167,8 +166,7 @@ class Ldap(private val config: Config) {
     withConnection { ctx ->
       val max = ctx
         .search(config.ldap.groupDn, "(objectClass=posixGroup)", listOf(Group.id))
-        .map { it.attributes[Group.id].first().toInt() }
-        .max() ?: 0
+        .maxOfOrNull { it.attributes[Group.id].first().toInt() } ?: 0
 
       max + 1
     }
@@ -181,18 +179,16 @@ class Ldap(private val config: Config) {
     val groups = getGroups()
 
     val memberExpander = MemberExpander(groups)
-    val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>> = groups.values
-      .map { group ->
-        val members = memberExpander.parse(group)
-          .toList()
-          .sortedBy { (userRef, _) ->
-            users[userRef]?.realname ?: userRef.username
-          }
-          .toMap()
+    val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>> = groups.values.associate { group ->
+      val members = memberExpander.parse(group)
+        .toList()
+        .sortedBy { (userRef, _) ->
+          users[userRef]?.realname ?: userRef.username
+        }
+        .toMap()
 
-        group.reference to members
-      }
-      .toMap()
+      group.reference to members
+    }
 
     // Make reference to groups from users.
     val userGroups = mutableMapOf<UserRef, MutableMap<GroupRef, List<GroupRef>>>()
@@ -232,7 +228,7 @@ class Ldap(private val config: Config) {
     users.values.forEach { user ->
       user.email?.let { email ->
         emails
-          .getOrPut(email.toLowerCase()) { mutableListOf() }
+          .getOrPut(email.lowercase()) { mutableListOf() }
           .add(UserRef(user.username))
       }
     }

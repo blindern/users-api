@@ -2,9 +2,6 @@ package no.foreningenbs.usersapi.hmac
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import java.time.Instant
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 import no.foreningenbs.usersapi.AuthFilter.Companion.hmacHashHeader
 import no.foreningenbs.usersapi.AuthFilter.Companion.hmacTimeHeader
 import org.http4k.core.Method
@@ -12,6 +9,9 @@ import org.http4k.core.Request
 import org.http4k.core.Uri
 import org.http4k.core.body.formAsMap
 import org.http4k.core.with
+import java.time.Instant
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 class Hmac(private val timeout: Long, private val key: String) {
   private val moshi = Moshi.Builder()
@@ -68,7 +68,7 @@ class Hmac(private val timeout: Long, private val key: String) {
   private fun hex(data: ByteArray) =
     data.fold(StringBuilder()) { acc, next ->
       acc.append(String.format("%02x", next))
-    }.toString().toLowerCase()
+    }.toString().lowercase()
 
   companion object {
     const val HASH_HEADER = "X-API-Hash"

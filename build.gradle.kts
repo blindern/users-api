@@ -1,17 +1,14 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import de.fuerstenau.gradle.buildconfig.BuildConfigSourceSet
-import java.io.ByteArrayOutputStream
-import java.time.Instant
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.time.Instant
 
 plugins {
   application
-  id("org.jetbrains.kotlin.jvm") version "1.4.32"
-  id("com.github.johnrengelman.shadow") version "6.1.0"
-  id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
-  id("com.github.ben-manes.versions") version "0.39.0"
-  id("de.fuerstenau.buildconfig") version "1.1.8"
+  id("org.jetbrains.kotlin.jvm") version "1.7.10"
+  id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+  id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 group = "no.foreningenbs"
@@ -19,65 +16,45 @@ version = "1.0-SNAPSHOT"
 
 buildscript {
   dependencies {
-    classpath("com.karumi.kotlinsnapshot:plugin:2.2.3")
+    classpath("com.karumi.kotlinsnapshot:plugin:2.3.0")
   }
-}
-
-fun getGitHash(): String {
-  val stdout = ByteArrayOutputStream()
-  exec {
-    commandLine("git", "rev-parse", "HEAD")
-    standardOutput = stdout
-  }
-  return stdout.toString().trim()
-}
-
-configure<BuildConfigSourceSet> {
-  buildConfigField("String", "BUILD_TIME", Instant.now().toString())
-  buildConfigField("String", "GIT_COMMIT", getGitHash())
 }
 
 repositories {
   mavenCentral()
-  jcenter()
-  maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
-  maven { setUrl("https://dl.bintray.com/spekframework/spek-dev") }
 }
 
 dependencies {
   implementation(kotlin("stdlib-jdk8"))
-  implementation("org.http4k:http4k-core:3.285.2")
-  implementation("org.http4k:http4k-server-jetty:3.285.2")
-  implementation("org.http4k:http4k-format-moshi:3.285.2")
+  implementation("org.http4k:http4k-core:4.27.1.0")
+  implementation("org.http4k:http4k-server-jetty:4.27.1.0")
+  implementation("org.http4k:http4k-format-moshi:4.27.1.0")
   implementation("com.natpryce:konfig:1.6.10.0")
-  implementation("com.squareup.moshi:moshi:1.12.0")
-  implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+  implementation("com.squareup.moshi:moshi:1.13.0")
+  implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
-  implementation("com.github.ben-manes.caffeine:caffeine:2.9.3")
-  implementation("ch.qos.logback:logback-classic:1.2.7")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+  implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
+  implementation("ch.qos.logback:logback-classic:1.2.11")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
   implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
-  implementation("io.github.microutils:kotlin-logging:1.12.5")
+  implementation("io.github.microutils:kotlin-logging:2.1.23")
   testImplementation("org.amshove.kluent:kluent:1.68")
-  testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
-  testImplementation("io.mockk:mockk:1.12.1")
-  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.17")
+  testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.18")
+  testImplementation("io.mockk:mockk:1.12.4")
+  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.18")
 }
-
-// The idea plugin makes generated BuildConfig resolved
-apply(plugin = "idea")
 
 apply(plugin = "com.karumi.kotlin-snapshot")
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
   }
 }
 
 application {
-  mainClassName = "no.foreningenbs.usersapi.MainKt"
+  mainClass.set("no.foreningenbs.usersapi.MainKt")
 }
 
 tasks.withType<ShadowJar> {
@@ -87,6 +64,24 @@ tasks.withType<ShadowJar> {
 tasks.withType<Test> {
   useJUnitPlatform {
     includeEngines("spek2")
+  }
+}
+
+tasks.register("dockerBuildProperties") {
+  val props = mapOf(
+    "build.timestamp" to Instant.now().toString(),
+    "build.commit" to (System.getenv("GITHUB_SHA") ?: "unknown"),
+    "build.branch" to (System.getenv("GITHUB_REF") ?: "unknown"),
+    "build.number" to ((System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt().toString())
+  )
+
+  inputs.properties(props)
+  outputs.file("$buildDir/build.properties")
+
+  doLast {
+    File("$buildDir/build.properties").bufferedWriter().use {
+      props.toProperties().store(it, "Written by Gradle")
+    }
   }
 }
 

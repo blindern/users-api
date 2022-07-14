@@ -22,7 +22,7 @@ object InvalidateCacheSpec : Spek({
       every { ldap.getGroups(any()) } returns mapOf()
       every { ldap.getUsers(any()) } returns mapOf()
 
-        dataProvider.getData() shouldBeEqualTo data
+      dataProvider.getData() shouldBeEqualTo data
 
       handler(org.http4k.core.Request(Method.POST, "/dummy"))
 

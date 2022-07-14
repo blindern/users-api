@@ -3,10 +3,10 @@ package no.foreningenbs.usersapi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import java.lang.reflect.Type
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.lens.string
+import java.lang.reflect.Type
 
 object MoshiBody {
   private val SerializeNullsFactory = object : JsonAdapter.Factory {

@@ -168,10 +168,12 @@ object MainSpec : Spek({
           val res by memoized(mode = CachingMode.EACH_GROUP) {
             val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
             val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter<Map<String, String>>(type)
-            val body = adapter.toJson(mapOf(
-              "username" to MOCK_AUTH_VALID_USERNAME,
-              "password" to MOCK_AUTH_VALID_PASSWORD
-            ))
+            val body = adapter.toJson(
+              mapOf(
+                "username" to MOCK_AUTH_VALID_USERNAME,
+                "password" to MOCK_AUTH_VALID_PASSWORD
+              )
+            )
 
             val req = Request(Method.POST, "/simpleauth")
               .with(CONTENT_TYPE of ContentType.APPLICATION_JSON)

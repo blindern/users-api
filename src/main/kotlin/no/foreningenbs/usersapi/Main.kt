@@ -27,7 +27,7 @@ import org.http4k.server.asServer
 
 private val logger = KotlinLogging.logger {}
 
-fun main(args: Array<String>) {
+fun main() {
   val ldap = Ldap(Config)
   val dataProvider = DataProvider(Config, ldap)
 
@@ -70,25 +70,27 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
     },
     "/health" bind GET to HealthController().handler,
     authFilter
-      .then(routes(
-        "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
-        WrappedResponse.filter.then(
-          routes(
+      .then(
+        routes(
+          "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
+          WrappedResponse.filter.then(
+            routes(
+              "/users" bind GET to ListUsers(dataProvider).handler,
+              "/user/{username}" bind GET to GetUser(dataProvider).handler,
+              "/groups" bind GET to ListGroups(dataProvider).handler,
+              "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
+              "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
+            )
+          ),
+          "/v2" bind routes(
             "/users" bind GET to ListUsers(dataProvider).handler,
-            "/user/{username}" bind GET to GetUser(dataProvider).handler,
+            "/users/{username}" bind GET to GetUser(dataProvider).handler,
             "/groups" bind GET to ListGroups(dataProvider).handler,
-            "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
+            "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
             "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
           )
-        ),
-        "/v2" bind routes(
-          "/users" bind GET to ListUsers(dataProvider).handler,
-          "/users/{username}" bind GET to GetUser(dataProvider).handler,
-          "/groups" bind GET to ListGroups(dataProvider).handler,
-          "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
-          "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
         )
-      ))
+      )
   )
 
   return ServerFilters.CatchLensFailure {
