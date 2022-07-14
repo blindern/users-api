@@ -233,7 +233,17 @@ class Ldap(private val config: Config) {
       }
     }
 
-    return AllData(users, groups, groupMembers, userGroups, userOwns, emails)
+    // Create reference from phone numbers to usernames.
+    val phoneNumbers = mutableMapOf<String, MutableList<UserRef>>()
+    users.values.forEach { user ->
+      user.phone?.let { phone ->
+        phoneNumbers
+          .getOrPut(phone.lowercase()) { mutableListOf() }
+          .add(UserRef(user.username))
+      }
+    }
+
+    return AllData(users, groups, groupMembers, userGroups, userOwns, emails, phoneNumbers)
   }
 }
 
@@ -275,7 +285,8 @@ data class AllData(
   val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>>,
   val userGroups: Map<UserRef, Map<GroupRef, List<GroupRef>>>,
   val userOwns: Map<UserRef, Map<GroupRef, List<GroupRef>>>,
-  val emails: Map<String, List<UserRef>>
+  val emails: Map<String, List<UserRef>>,
+  val phoneNumbers: Map<String, List<UserRef>>
 )
 
 sealed class Reference {
