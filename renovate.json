@@ -1,11 +1,5 @@
 {
-  "extends": ["github>capraconsulting/renovate-config:default"],
+  "extends": ["github>henrist/renovate-config:default"],
   "automerge": true,
-  "automergeType": "branch",
-  "packageRules": [
-    {
-      "packagePatterns": ["^org.http4k:http4k-"],
-      "groupName": "http4k"
-    }
-  ]
+  "automergeType": "branch"
 }
