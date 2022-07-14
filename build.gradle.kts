@@ -70,9 +70,12 @@ tasks.withType<Test> {
 tasks.register("dockerBuildProperties") {
   val props = mapOf(
     "build.timestamp" to Instant.now().toString(),
-    "build.commit" to (System.getenv("GITHUB_SHA") ?: "unknown"),
-    "build.branch" to (System.getenv("GITHUB_REF") ?: "unknown"),
-    "build.number" to ((System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt().toString())
+    "build.commit" to (System.getenv("GITHUB_SHA") ?: ""),
+    "build.url" to (
+      System.getenv("GITHUB_RUN_ID")?.let { runId ->
+        "${System.getenv("GITHUB_SERVER_URL")}/${System.getenv("GITHUB_REPOSITORY")}/actions/runs/$runId"
+      } ?: ""
+      )
   )
 
   inputs.properties(props)

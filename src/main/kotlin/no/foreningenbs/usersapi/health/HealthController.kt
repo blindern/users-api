@@ -42,9 +42,8 @@ data class HealthBuildInfo(
    * During local development this will be null.
    */
   val timestamp: Instant?,
-  val commit: String,
-  val branch: String,
-  val number: Int
+  val commit: String?,
+  val url: String?,
 )
 
 /**
@@ -55,9 +54,8 @@ fun getHealthBuildInfo(): HealthBuildInfo {
   if (!f.exists()) {
     return HealthBuildInfo(
       timestamp = null,
-      commit = "unknown",
-      branch = "unknown",
-      number = 0,
+      commit = null,
+      url = null
     )
   }
 
@@ -72,7 +70,6 @@ fun getHealthBuildInfo(): HealthBuildInfo {
       if (it.isEmpty()) null else Instant.parse(it)
     },
     commit = properties.getProperty("build.commit"),
-    branch = properties.getProperty("build.branch"),
-    number = properties.getProperty("build.number").toInt()
+    url = properties.getProperty("build.url")
   )
 }
