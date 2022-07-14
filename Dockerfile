@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine@sha256:7171081bdd19d577be0ec4633e14888358cfa24e336c4aa068b81a1cc6fd19b1
+FROM eclipse-temurin:18-jre-alpine@sha256:111984299906a2216ae56eb7829029b04a003be52e90e6117b65824e547a5edc
 
 COPY build/libs/users-api-1.0-SNAPSHOT-all.jar /users-api.jar
 
