@@ -3,17 +3,23 @@ package no.foreningenbs.usersapi
 import mu.KotlinLogging
 import no.foreningenbs.usersapi.api.InvalidateCache
 import no.foreningenbs.usersapi.api.auth.SimpleAuth
+import no.foreningenbs.usersapi.api.groups.AddUserToGroup
 import no.foreningenbs.usersapi.api.groups.GetGroup
 import no.foreningenbs.usersapi.api.groups.ListGroups
+import no.foreningenbs.usersapi.api.groups.RemoveUserFromGroup
+import no.foreningenbs.usersapi.api.users.CreateUser
 import no.foreningenbs.usersapi.api.users.GetUser
 import no.foreningenbs.usersapi.api.users.ListUsers
+import no.foreningenbs.usersapi.api.users.ModifyUser
 import no.foreningenbs.usersapi.health.HealthController
 import no.foreningenbs.usersapi.hmac.Hmac
 import no.foreningenbs.usersapi.ldap.Ldap
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
+import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
+import org.http4k.core.Method.PUT
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
@@ -84,9 +90,13 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
           ),
           "/v2" bind routes(
             "/users" bind GET to ListUsers(dataProvider).handler,
+            "/users" bind POST to CreateUser(ldap, dataProvider).handler,
             "/users/{username}" bind GET to GetUser(dataProvider).handler,
+            "/users/{username}/modify" bind POST to ModifyUser(ldap, dataProvider).handler,
             "/groups" bind GET to ListGroups(dataProvider).handler,
             "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
+            "/groups/{groupname}/members/users/{username}" bind PUT to AddUserToGroup(ldap, dataProvider).handler,
+            "/groups/{groupname}/members/users/{username}" bind DELETE to RemoveUserFromGroup(ldap, dataProvider).handler,
             "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
           )
         )

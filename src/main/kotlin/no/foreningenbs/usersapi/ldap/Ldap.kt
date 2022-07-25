@@ -3,11 +3,18 @@ package no.foreningenbs.usersapi.ldap
 import no.foreningenbs.usersapi.Config
 import no.foreningenbs.usersapi.ldap.Reference.GroupRef
 import no.foreningenbs.usersapi.ldap.Reference.UserRef
+import java.security.MessageDigest
+import java.security.SecureRandom
+import java.util.Base64
 import java.util.Enumeration
 import java.util.Hashtable
 import javax.naming.AuthenticationException
 import javax.naming.Context
 import javax.naming.directory.Attribute
+import javax.naming.directory.BasicAttribute
+import javax.naming.directory.BasicAttributes
+import javax.naming.directory.DirContext
+import javax.naming.directory.ModificationItem
 import javax.naming.directory.SearchControls
 import javax.naming.directory.SearchResult
 import javax.naming.ldap.InitialLdapContext
@@ -37,11 +44,17 @@ class Ldap(private val config: Config) {
   fun <R> withConnection(
     dn: String = config.ldap.adminDn,
     password: String = config.ldap.adminPassword,
-    block: (LdapContext) -> R
+    allowSlave: Boolean = true,
+    block: (LdapContext) -> R,
   ): R {
+    val server = when (allowSlave) {
+      true -> config.ldap.server
+      false -> config.ldap.masterServer
+    }
+
     val env = Hashtable<String, Any>(11)
     env[Context.INITIAL_CONTEXT_FACTORY] = "com.sun.jndi.ldap.LdapCtxFactory"
-    env[Context.PROVIDER_URL] = "ldap://${config.ldap.server}:389"
+    env[Context.PROVIDER_URL] = "ldap://$server:389"
 
     val ctx = InitialLdapContext(env, null)
     try {
@@ -159,7 +172,7 @@ class Ldap(private val config: Config) {
         .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.id))
         .map { it.attributes[User.id].first().toInt() }
         .filter { it < 60_000 }
-        .maxOrNull() ?: 0
+        .maxOrNull() ?: 9999
 
       max + 1
     }
@@ -172,6 +185,230 @@ class Ldap(private val config: Config) {
 
       max + 1
     }
+
+  fun generatePasswordHash(plaintext: String): String {
+    val salt = ByteArray(4).also {
+      SecureRandom().nextBytes(it)
+    }
+
+    val hash = MessageDigest.getInstance("SHA-1").let {
+      it.update(plaintext.encodeToByteArray())
+      it.update(salt)
+      it.digest()
+    }
+
+    return "{SSHA}" + Base64.getEncoder().encodeToString(hash + salt)
+  }
+
+  fun createUser(
+    username: String,
+    firstName: String,
+    lastName: String,
+    email: String,
+    phone: String?,
+    passwordInPlaintext: String?,
+  ) {
+    withConnection(allowSlave = false) { ctx ->
+      val attributes = BasicAttributes()
+
+      // Some details about the Samba-specific fields can be seen here:
+      // https://www.linuxtopia.org/online_books/network_administration_guides/samba_reference_guide/18_passdb_23.html
+
+      // This is based on how users have been created in the past.
+
+      val uidNumber = getNextUid()
+
+      attributes.put("cn", "$firstName $lastName")
+      attributes.put("displayName", "$firstName $lastName")
+      attributes.put("mail", email)
+      attributes.put("gecos", "System User")
+      attributes.put("gidNumber", "513") // 513 == brukere
+      attributes.put("givenName", firstName)
+      attributes.put("homeDirectory", "/home/$username")
+      attributes.put("loginShell", "/usr/sbin/nologin")
+      if (phone != null) {
+        attributes.put("mobile", phone)
+      }
+
+      val objectClass = BasicAttribute("objectClass")
+      objectClass.add("top")
+      objectClass.add("person")
+      objectClass.add("organizationalPerson")
+      objectClass.add("posixAccount")
+      objectClass.add("shadowAccount")
+      objectClass.add("inetOrgPerson")
+      objectClass.add("sambaSamAccount")
+      attributes.put(objectClass)
+
+      if (passwordInPlaintext != null) {
+        attributes.put("userPassword", generatePasswordHash(passwordInPlaintext))
+      }
+      attributes.put("sambaAcctFlags", "[UX]")
+      attributes.put("sambaHomePath", "\\\\\\$username")
+      attributes.put("sambaKickoffTime", "2147483647")
+      // attributes.put("sambaLMPassword", "xxx")
+      attributes.put("sambaLogoffTime", "2147483647")
+      attributes.put("sambaLogonTime", "0")
+      // attributes.put("sambaNTPassword", "xxx")
+      attributes.put("sambaPrimaryGroupSID", "S-1-5-21-3661172500-3094412630-135700027-513")
+      attributes.put("sambaProfilePath", "\\\\\\profiles\\$username")
+      attributes.put("sambaPwdCanChange", "0")
+      attributes.put("sambaPwdLastSet", "0")
+      attributes.put("sambaPwdMustChange", "2147483647")
+      attributes.put("sambaSID", "S-1-5-21-3661172500-3094412630-135700027-${uidNumber * 2 + 1000}")
+      attributes.put("sn", lastName)
+      attributes.put("uidNumber", "$uidNumber")
+
+      ctx.createSubcontext(userDn(username), attributes)
+    }
+  }
+
+  data class StringValue(val value: String)
+  data class OptionalStringValue(val value: String?)
+
+  /**
+   * Modify a user.
+   */
+  fun modifyUser(
+    username: String,
+    firstName: StringValue?,
+    lastName: StringValue?,
+    email: StringValue?,
+    phone: OptionalStringValue?,
+    passwordInPlaintext: OptionalStringValue?,
+  ) {
+    data class ExistingData(
+      val firstName: String,
+      val lastName: String,
+    )
+
+    withConnection(allowSlave = false) { ctx ->
+      val userDn = userDn(username)
+      val existingAttr = ctx.getAttributes(
+        userDn,
+        arrayOf("givenName", "sn", "phone", "sambaLMPassword", "sambaNTPassword")
+      )
+
+      val attributes = mutableListOf<ModificationItem>()
+
+      fun update(attribute: Attribute) {
+        attributes.add(ModificationItem(DirContext.REPLACE_ATTRIBUTE, attribute))
+      }
+
+      fun remove(attributeName: String) {
+        attributes.add(ModificationItem(DirContext.REMOVE_ATTRIBUTE, BasicAttribute(attributeName)))
+      }
+
+      if (firstName != null) {
+        update(BasicAttribute("givenName", firstName.value))
+      }
+
+      if (lastName != null) {
+        update(BasicAttribute("sn", lastName.value))
+      }
+
+      if (firstName != null || lastName != null) {
+        val fullName = listOf(
+          firstName?.value ?: existingAttr.get("givenName").first(),
+          lastName?.value ?: existingAttr.get("sn").first(),
+        ).joinToString(" ")
+
+        update(BasicAttribute("cn", fullName))
+        update(BasicAttribute("displayName", fullName))
+      }
+
+      if (email != null) {
+        update(BasicAttribute("mail", email.value))
+      }
+
+      if (phone != null) {
+        if (phone.value != null) {
+          update(BasicAttribute("phone", phone.value))
+        } else if (existingAttr.get("phone") != null) {
+          remove("phone")
+        }
+      }
+
+      if (passwordInPlaintext != null) {
+        if (passwordInPlaintext.value != null) {
+          update(BasicAttribute("userPassword", generatePasswordHash(passwordInPlaintext.value)))
+        } else if (existingAttr.get("userPassword") != null) {
+          remove("userPassword")
+        }
+
+        // Let's avoid the insecure SHA4 Samba password for now.
+        // Shouldn't really be needed any more since ipps:// is usually used nowadays.
+        if (existingAttr.get("sambaLMPassword") != null) {
+          remove("sambaLMPassword")
+        }
+        if (existingAttr.get("sambaNTPassword") != null) {
+          remove("sambaNTPassword")
+        }
+      }
+
+      if (attributes.size > 0) {
+        ctx.modifyAttributes(userDn, attributes.toTypedArray())
+      }
+    }
+  }
+
+  /**
+   * Add member to a group.
+   */
+  fun addGroupMember(group: GroupRef, member: Reference) {
+    withConnection(allowSlave = false) { ctx ->
+      val existingAttr = ctx.getAttributes(
+        groupDn(group.groupname),
+        arrayOf(Group.members)
+      )
+
+      val memberValue = when (member) {
+        is GroupRef -> groupDn(member.groupname)
+        is UserRef -> userDn(member.username)
+      }
+
+      val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
+
+      if (memberValue !in membersAttribute) {
+        membersAttribute.add(memberValue)
+
+        val attributes = listOf(
+          ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute)
+        )
+
+        ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
+      }
+    }
+  }
+
+  /**
+   * Remove member from a group.
+   */
+  fun removeGroupMember(group: GroupRef, member: Reference) {
+    withConnection(allowSlave = false) { ctx ->
+      val existingAttr = ctx.getAttributes(
+        groupDn(group.groupname),
+        arrayOf(Group.members)
+      )
+
+      val memberValue = when (member) {
+        is GroupRef -> groupDn(member.groupname)
+        is UserRef -> userDn(member.username)
+      }
+
+      val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
+
+      if (memberValue in membersAttribute) {
+        membersAttribute.remove(memberValue)
+
+        val attributes = listOf(
+          ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute)
+        )
+
+        ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
+      }
+    }
+  }
 
   /**
    * Generate cache of all users and groups
