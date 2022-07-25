@@ -95,7 +95,7 @@ fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
 
   return ServerFilters.CatchLensFailure {
     logger.debug("Lens failure: ${it.message}", it)
-    Response(BAD_REQUEST.description(it.failures.joinToString("; ")))
+    Response(BAD_REQUEST).body(it.failures.joinToString("; "))
   }
     .then(routes)
 }
