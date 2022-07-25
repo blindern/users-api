@@ -20,17 +20,19 @@ class Ldap(private val config: Config) {
 
   fun testCredentials(username: String, password: String) =
     try {
-      withConnection(getBindDn(username), password) { ctx ->
+      withConnection(userDn(username), password) { ctx ->
         // Perform a search so it will force a bind
-        ctx.search(config.ldap.userDn, "(uid=%s)".format(escape(username)), listOf(User.id))
+        ctx.search(config.ldap.usersDn, "(uid=%s)".format(escape(username)), listOf(User.id))
       }
       true
     } catch (e: AuthenticationException) {
       false
     }
 
-  fun getBindDn(username: String) =
-    config.ldap.bindDn.replace("USERNAME", username)
+  fun userRdn(username: String) = "%s=%s".format(config.ldap.userRdnName, escape(username))
+  fun userDn(username: String) = "%s,%s".format(userRdn(username), config.ldap.usersDn)
+  fun groupRdn(groupname: String) = "%s=%s".format(config.ldap.groupRdnName, escape(groupname))
+  fun groupDn(groupname: String) = "%s,%s".format(groupRdn(groupname), config.ldap.groupsDn)
 
   fun <R> withConnection(
     dn: String = config.ldap.adminDn,
@@ -61,7 +63,7 @@ class Ldap(private val config: Config) {
   fun getUsers(filter: String = "(uid=*)"): Map<UserRef, User> =
     withConnection { ctx ->
       ctx
-        .search(config.ldap.userDn, filter, User.ldapFieldList)
+        .search(config.ldap.usersDn, filter, User.ldapFieldList)
         .map {
           /* TODO: There can be multiple values for each attribute, however
               we only pick the first. */
@@ -88,7 +90,7 @@ class Ldap(private val config: Config) {
 
     return withConnection { ctx ->
       ctx
-        .search(config.ldap.groupDn, fullFilter, Group.ldapFieldList)
+        .search(config.ldap.groupsDn, fullFilter, Group.ldapFieldList)
         .filterNot {
           (it.attributes[Group.name]?.get() as String) in config.ldap.groupsIgnore
         }
@@ -123,8 +125,8 @@ class Ldap(private val config: Config) {
       }
 
       when (match.group(3)) {
-        config.ldap.userDn -> acc + UserRef(match.group(2)!!)
-        config.ldap.groupDn -> acc + GroupRef(match.group(2)!!)
+        config.ldap.usersDn -> acc + UserRef(match.group(2)!!)
+        config.ldap.groupsDn -> acc + GroupRef(match.group(2)!!)
         else -> {
           // TODO: Unexpected - log this
           acc
@@ -154,7 +156,7 @@ class Ldap(private val config: Config) {
   fun getNextUid() =
     withConnection { ctx ->
       val max = ctx
-        .search(config.ldap.userDn, "(objectClass=posixAccount)", listOf(User.id))
+        .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.id))
         .map { it.attributes[User.id].first().toInt() }
         .filter { it < 60_000 }
         .maxOrNull() ?: 0
@@ -165,7 +167,7 @@ class Ldap(private val config: Config) {
   fun getNextGid() =
     withConnection { ctx ->
       val max = ctx
-        .search(config.ldap.groupDn, "(objectClass=posixGroup)", listOf(Group.id))
+        .search(config.ldap.groupsDn, "(objectClass=posixGroup)", listOf(Group.id))
         .maxOfOrNull { it.attributes[Group.id].first().toInt() } ?: 0
 
       max + 1

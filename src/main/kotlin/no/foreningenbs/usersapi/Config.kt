@@ -21,9 +21,11 @@ object Config {
 
   class Ldap {
     val server = "ldap.zt.foreningenbs.no"
-    val groupDn = "ou=Groups,dc=foreningenbs,dc=no"
-    val userDn = "ou=Users,dc=foreningenbs,dc=no"
-    val bindDn = "uid=USERNAME,ou=Users,dc=foreningenbs,dc=no"
+    val masterServer = "ldap-master.zt.foreningenbs.no"
+    val groupsDn = "ou=Groups,dc=foreningenbs,dc=no"
+    val groupRdnName = "cn"
+    val usersDn = "ou=Users,dc=foreningenbs,dc=no"
+    val userRdnName = "uid"
     val adminDn = "cn=admin,dc=foreningenbs,dc=no"
     val adminPassword = config[Key("users-api.ldap-admin-password", stringType)]
 
