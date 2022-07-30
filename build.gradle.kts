@@ -41,7 +41,7 @@ dependencies {
   implementation("io.github.microutils:kotlin-logging:2.1.23")
   testImplementation("io.kotest:kotest-assertions-core:5.4.0")
   testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.18")
-  testImplementation("io.mockk:mockk:1.12.4")
+  testImplementation("io.mockk:mockk:1.12.5")
   testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.18")
 }
 
