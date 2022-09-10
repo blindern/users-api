@@ -30,7 +30,7 @@ dependencies {
   implementation("org.http4k:http4k-server-jetty:4.30.4.0")
   implementation("org.http4k:http4k-format-moshi:4.30.4.0")
   implementation("com.natpryce:konfig:1.6.10.0")
-  implementation("com.squareup.moshi:moshi:1.13.0")
+  implementation("com.squareup.moshi:moshi:1.14.0")
   implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
