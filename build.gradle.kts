@@ -5,7 +5,7 @@ import java.time.Instant
 
 plugins {
   application
-  id("org.jetbrains.kotlin.jvm") version "1.8.0"
+  id("org.jetbrains.kotlin.jvm") version "1.8.10"
   id("com.github.johnrengelman.shadow") version "7.1.2"
   id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
   id("com.github.ben-manes.versions") version "0.42.0"
