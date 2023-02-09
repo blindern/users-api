@@ -38,7 +38,7 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
   implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
-  implementation("io.github.microutils:kotlin-logging:2.1.23")
+  implementation("io.github.microutils:kotlin-logging:3.0.5")
   testImplementation("io.kotest:kotest-assertions-core:5.5.5")
   testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.19")
   testImplementation("io.mockk:mockk:1.13.4")
