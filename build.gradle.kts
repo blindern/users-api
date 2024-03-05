@@ -35,7 +35,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
   implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
-  implementation("ch.qos.logback:logback-classic:1.5.1")
+  implementation("ch.qos.logback:logback-classic:1.5.2")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
   implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
   implementation("io.github.microutils:kotlin-logging:3.0.5")
