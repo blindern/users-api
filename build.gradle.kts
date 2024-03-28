@@ -49,7 +49,7 @@ apply(plugin = "com.karumi.kotlin-snapshot")
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
-    jvmTarget = "17"
+    jvmTarget = "21"
   }
 }
 

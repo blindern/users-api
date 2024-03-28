@@ -23,7 +23,7 @@ database.
 
 ## Development
 
-Ensure you have JDK 17 or newer on your system. If not install it through SDKMAN!
+Ensure you have JDK 21 or newer on your system. If not install it through SDKMAN!
 See https://sdkman.io
 
 The LDAP servers are located at `ldap.zt.foreningenbs.no`. To be able
