@@ -6,9 +6,9 @@ import java.time.Instant
 plugins {
   application
   id("org.jetbrains.kotlin.jvm") version "1.9.23"
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("com.github.johnrengelman.shadow") version "8.1.1"
   id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
-  id("com.github.ben-manes.versions") version "0.42.0"
+  id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 group = "no.foreningenbs"
@@ -26,9 +26,9 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib-jdk8"))
-  implementation("org.http4k:http4k-core:4.44.1.0")
-  implementation("org.http4k:http4k-server-jetty:4.44.1.0")
-  implementation("org.http4k:http4k-format-moshi:4.44.1.0")
+  implementation("org.http4k:http4k-core:5.14.4.0")
+  implementation("org.http4k:http4k-server-jetty:5.14.4.0")
+  implementation("org.http4k:http4k-format-moshi:5.14.4.0")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.1")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.1")

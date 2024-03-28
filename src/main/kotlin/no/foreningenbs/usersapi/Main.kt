@@ -26,6 +26,7 @@ import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters
+import org.http4k.lens.LensFailure
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Jetty
@@ -111,7 +112,7 @@ fun app(
         ),
     )
 
-  return ServerFilters.CatchLensFailure {
+  return ServerFilters.CatchLensFailure { it: LensFailure ->
     logger.debug("Lens failure: ${it.message}", it)
     Response(BAD_REQUEST).body(it.failures.joinToString("; "))
   }
