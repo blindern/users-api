@@ -31,7 +31,7 @@ class Ldap(private val config: Config) {
   ) = try {
     withConnection(userDn(username), password) { ctx ->
       // Perform a search so it will force a bind
-      ctx.search(config.ldap.usersDn, "(uid=%s)".format(escape(username)), listOf(User.id))
+      ctx.search(config.ldap.usersDn, "(uid=%s)".format(escape(username)), listOf(User.ID))
     }
     true
   } catch (e: AuthenticationException) {
@@ -87,11 +87,11 @@ class Ldap(private val config: Config) {
           /* TODO: There can be multiple values for each attribute, however
               we only pick the first. */
           User(
-            it.attributes[User.id].first().toInt(),
-            it.attributes[User.username].first(),
-            it.attributes[User.email]?.first(),
-            it.attributes[User.realname]?.first(),
-            it.attributes[User.phone]?.first(),
+            it.attributes[User.ID].first().toInt(),
+            it.attributes[User.USERNAME].first(),
+            it.attributes[User.EMAIL]?.first(),
+            it.attributes[User.REALNAME]?.first(),
+            it.attributes[User.PHONE]?.first(),
           )
         }
         .sortedBy { it.realname }
@@ -114,19 +114,19 @@ class Ldap(private val config: Config) {
       ctx
         .search(config.ldap.groupsDn, fullFilter, Group.ldapFieldList)
         .filterNot {
-          (it.attributes[Group.name]?.get() as String) in config.ldap.groupsIgnore
+          (it.attributes[Group.NAME]?.get() as String) in config.ldap.groupsIgnore
         }
         .map { res ->
-          val members = res.attributes[Group.members]?.list() ?: emptyList()
-          val owners = res.attributes[Group.owners]?.list() ?: emptyList()
+          val members = res.attributes[Group.MEMBERS]?.list() ?: emptyList()
+          val owners = res.attributes[Group.OWNERS]?.list() ?: emptyList()
 
           /* TODO: There can be multiple values for each attribute, however
               we only pick the first. */
           Group(
             res.nameInNamespace,
-            res.attributes[Group.id].first().toInt(),
-            res.attributes[Group.name].first(),
-            res.attributes[Group.description]?.first(),
+            res.attributes[Group.ID].first().toInt(),
+            res.attributes[Group.NAME].first(),
+            res.attributes[Group.DESCRIPTION]?.first(),
             members.toReference(),
             owners.toReference(),
           )
@@ -171,16 +171,16 @@ class Ldap(private val config: Config) {
       "(|%s)".format(it.joinToString(""))
     }
 
-  fun getUsersByNames(names: List<String>): Map<UserRef, User> = getUsers(buildOrFilter(User.username, names))
+  fun getUsersByNames(names: List<String>): Map<UserRef, User> = getUsers(buildOrFilter(User.USERNAME, names))
 
-  fun getGroupsByNames(names: List<String>): Map<GroupRef, Group> = getGroups(buildOrFilter(Group.name, names))
+  fun getGroupsByNames(names: List<String>): Map<GroupRef, Group> = getGroups(buildOrFilter(Group.NAME, names))
 
   fun getNextUid() =
     withConnection { ctx ->
       val max =
         ctx
-          .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.id))
-          .map { it.attributes[User.id].first().toInt() }
+          .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.ID))
+          .map { it.attributes[User.ID].first().toInt() }
           .filter { it < 60_000 }
           .maxOrNull() ?: 9999
 
@@ -191,8 +191,8 @@ class Ldap(private val config: Config) {
     withConnection { ctx ->
       val max =
         ctx
-          .search(config.ldap.groupsDn, "(objectClass=posixGroup)", listOf(Group.id))
-          .maxOfOrNull { it.attributes[Group.id].first().toInt() } ?: 0
+          .search(config.ldap.groupsDn, "(objectClass=posixGroup)", listOf(Group.ID))
+          .maxOfOrNull { it.attributes[Group.ID].first().toInt() } ?: 0
 
       max + 1
     }
@@ -379,7 +379,7 @@ class Ldap(private val config: Config) {
       val existingAttr =
         ctx.getAttributes(
           groupDn(group.groupname),
-          arrayOf(Group.members),
+          arrayOf(Group.MEMBERS),
         )
 
       val memberValue =
@@ -388,7 +388,7 @@ class Ldap(private val config: Config) {
           is UserRef -> userDn(member.username)
         }
 
-      val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
+      val membersAttribute = existingAttr[Group.MEMBERS] ?: BasicAttribute(Group.MEMBERS)
 
       if (memberValue !in membersAttribute) {
         membersAttribute.add(memberValue)
@@ -414,7 +414,7 @@ class Ldap(private val config: Config) {
       val existingAttr =
         ctx.getAttributes(
           groupDn(group.groupname),
-          arrayOf(Group.members),
+          arrayOf(Group.MEMBERS),
         )
 
       val memberValue =
@@ -423,7 +423,7 @@ class Ldap(private val config: Config) {
           is UserRef -> userDn(member.username)
         }
 
-      val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
+      val membersAttribute = existingAttr[Group.MEMBERS] ?: BasicAttribute(Group.MEMBERS)
 
       if (memberValue in membersAttribute) {
         membersAttribute.remove(memberValue)

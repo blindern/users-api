@@ -47,7 +47,7 @@ object Config {
   val ldap = Ldap()
   val cacheTimeout: Duration = Duration.of(300L, ChronoUnit.SECONDS)
   val hmacKey = config[Key("users-api.hmac-key", stringType)]
-  const val hmacTimeout = 300L // allow 5 minutes time delay
+  const val HMAC_TIMEOUT = 300L // allow 5 minutes time delay
 
   // If set to false, all unrestricted access will be granted.
   // Only set false if needed during local development/testing.

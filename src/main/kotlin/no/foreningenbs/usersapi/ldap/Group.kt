@@ -98,19 +98,19 @@ data class Group(
 
   companion object {
     // LDAP Fields
-    const val id = "gidNumber"
-    const val name = "cn"
-    const val members = "member" // memberUid
-    const val description = "description"
-    const val owners = "owner"
+    const val ID = "gidNumber"
+    const val NAME = "cn"
+    const val MEMBERS = "member" // memberUid
+    const val DESCRIPTION = "description"
+    const val OWNERS = "owner"
 
     val ldapFieldList =
       listOf(
-        id,
-        name,
-        members,
-        description,
-        owners,
+        ID,
+        NAME,
+        MEMBERS,
+        DESCRIPTION,
+        OWNERS,
       )
   }
 }

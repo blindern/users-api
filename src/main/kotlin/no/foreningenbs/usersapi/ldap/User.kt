@@ -69,19 +69,19 @@ data class User(
 
   companion object {
     // LDAP Fields
-    const val id = "uidNumber"
-    const val username = "uid"
-    const val email = "mail"
-    const val realname = "cn"
-    const val phone = "mobile"
+    const val ID = "uidNumber"
+    const val USERNAME = "uid"
+    const val EMAIL = "mail"
+    const val REALNAME = "cn"
+    const val PHONE = "mobile"
 
     val ldapFieldList =
       listOf(
-        id,
-        username,
-        email,
-        realname,
-        phone,
+        ID,
+        USERNAME,
+        EMAIL,
+        REALNAME,
+        PHONE,
       )
   }
 }

@@ -76,7 +76,7 @@ fun createLdapMock(): Ldap =
     every { it.getUsers(any()) } returns mockUsers
   }
 
-val hmac = Hmac(Config.hmacTimeout, Config.hmacKey)
+val hmac = Hmac(Config.HMAC_TIMEOUT, Config.hmacKey)
 
 fun Request.withHmac() = hmac.withHmac(this)
 

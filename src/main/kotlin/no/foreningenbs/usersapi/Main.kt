@@ -68,7 +68,7 @@ fun app(
 ): HttpHandler {
   val authFilter =
     AuthFilter(
-      Hmac(Config.hmacTimeout, Config.hmacKey),
+      Hmac(Config.HMAC_TIMEOUT, Config.hmacKey),
       // Currently using hmac key as also directly API key. We might
       // want to revisit this later, e.g. giving each application
       // its own key.
