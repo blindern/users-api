@@ -13,15 +13,17 @@ import org.http4k.lens.Path
 class GetUser(private val dataProvider: DataProvider) {
   val handler = handler@{ req: Request ->
     val username = Path.of("username")(req)
-    val user = dataProvider.getData().users[Reference.UserRef(username)]
-      ?: return@handler Response(Status.NOT_FOUND)
+    val user =
+      dataProvider.getData().users[Reference.UserRef(username)]
+        ?: return@handler Response(Status.NOT_FOUND)
 
     Response(OK).with(
-      jsonMapLens of user.toResponse(
-        dataProvider,
-        withRelations = true,
-        withGroupsDetailed = true
-      )
+      jsonMapLens of
+        user.toResponse(
+          dataProvider,
+          withRelations = true,
+          withGroupsDetailed = true,
+        ),
     )
   }
 }

@@ -37,6 +37,7 @@ object MainSpec : Spek({
         describe("request with bad hmac") {
           val res by memoized(mode = CachingMode.EACH_GROUP) {
             val hmac = Hmac(100, "some invalid key")
+
             fun Request.withHmac() = hmac.withHmac(this)
             app(Request(Method.GET, "/users").withHmac())
           }
@@ -51,66 +52,66 @@ object MainSpec : Spek({
         val title: String,
         val requestBuilder: () -> Request,
         val snapshotName: String,
-        val status: Status = Status.OK
+        val status: Status = Status.OK,
       )
 
       listOf(
         Row(
           "GET /groups",
           { Request(Method.GET, "/groups") },
-          "GET_groups_body"
+          "GET_groups_body",
         ),
         Row(
           "GET /group/beboer",
           { Request(Method.GET, "/group/beboer") },
-          "GET_group_beboer_body"
+          "GET_group_beboer_body",
         ),
         Row(
           "GET /groups",
           { Request(Method.GET, "/groups") },
-          "GET_groups_body"
+          "GET_groups_body",
         ),
         Row(
           "GET /group/beboer",
           { Request(Method.GET, "/group/beboer") },
-          "GET_group_beboer_body"
+          "GET_group_beboer_body",
         ),
         Row(
           "GET /user/unknown",
           { Request(Method.GET, "/user/unknown") },
           "GET_user_unknown_body",
-          Status.NOT_FOUND
+          Status.NOT_FOUND,
         ),
         Row(
           "GET /user/halvargimnes",
           { Request(Method.GET, "/user/halvargimnes") },
-          "GET_user_halvargimnes_body"
+          "GET_user_halvargimnes_body",
         ),
         Row(
           "GET /user/halvargimnes?grouplevel=2",
           { Request(Method.GET, "/user/halvargimnes?grouplevel=2") },
-          "GET_user_halvargimnes_grouplevel_2_body"
+          "GET_user_halvargimnes_grouplevel_2_body",
         ),
         Row(
           "GET /users",
           { Request(Method.GET, "/users") },
-          "GET_users_body"
+          "GET_users_body",
         ),
         Row(
           "GET /users?grouplevel=1",
           { Request(Method.GET, "/users?grouplevel=1") },
-          "GET_users_grouplevel_1_body"
+          "GET_users_grouplevel_1_body",
         ),
         Row(
           "GET /users?emails=example%40example.com",
           { Request(Method.GET, "/users?emails=example%40example.com") },
-          "GET_users_email_no_match_body"
+          "GET_users_email_no_match_body",
         ),
         Row(
           "GET /users?emails=halvargimnes%40foreningenbs.no",
           { Request(Method.GET, "/users?emails=halvargimnes%40foreningenbs.no") },
-          "GET_users_email_with_match_body"
-        )
+          "GET_users_email_with_match_body",
+        ),
       ).map { row ->
         describe(row.title) {
           val res by memoized(mode = CachingMode.EACH_GROUP) {
@@ -130,11 +131,12 @@ object MainSpec : Spek({
       describe("POST /simpleauth using urlencoded form") {
         describe("using invalid credentials") {
           val res by memoized(mode = CachingMode.EACH_GROUP) {
-            val req = Request(Method.POST, "/simpleauth")
-              .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
-              .form("username", "somethingInvalid")
-              .form("password", "test1234")
-              .withHmac()
+            val req =
+              Request(Method.POST, "/simpleauth")
+                .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
+                .form("username", "somethingInvalid")
+                .form("password", "test1234")
+                .withHmac()
             app(req)
           }
 
@@ -145,11 +147,12 @@ object MainSpec : Spek({
 
         describe("using valid credentials") {
           val res by memoized(mode = CachingMode.EACH_GROUP) {
-            val req = Request(Method.POST, "/simpleauth")
-              .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
-              .form("username", MOCK_AUTH_VALID_USERNAME)
-              .form("password", MOCK_AUTH_VALID_PASSWORD)
-              .withHmac()
+            val req =
+              Request(Method.POST, "/simpleauth")
+                .with(CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
+                .form("username", MOCK_AUTH_VALID_USERNAME)
+                .form("password", MOCK_AUTH_VALID_PASSWORD)
+                .withHmac()
             app(req)
           }
 
@@ -168,17 +171,19 @@ object MainSpec : Spek({
           val res by memoized(mode = CachingMode.EACH_GROUP) {
             val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
             val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter<Map<String, String>>(type)
-            val body = adapter.toJson(
-              mapOf(
-                "username" to MOCK_AUTH_VALID_USERNAME,
-                "password" to MOCK_AUTH_VALID_PASSWORD
+            val body =
+              adapter.toJson(
+                mapOf(
+                  "username" to MOCK_AUTH_VALID_USERNAME,
+                  "password" to MOCK_AUTH_VALID_PASSWORD,
+                ),
               )
-            )
 
-            val req = Request(Method.POST, "/simpleauth")
-              .with(CONTENT_TYPE of ContentType.APPLICATION_JSON)
-              .body(body)
-              .withHmac()
+            val req =
+              Request(Method.POST, "/simpleauth")
+                .with(CONTENT_TYPE of ContentType.APPLICATION_JSON)
+                .body(body)
+                .withHmac()
             app(req)
           }
 

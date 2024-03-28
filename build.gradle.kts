@@ -7,7 +7,7 @@ plugins {
   application
   id("org.jetbrains.kotlin.jvm") version "1.9.23"
   id("com.github.johnrengelman.shadow") version "7.1.2"
-  id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+  id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
   id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -68,15 +68,16 @@ tasks.withType<Test> {
 }
 
 tasks.register("dockerBuildProperties") {
-  val props = mapOf(
-    "build.timestamp" to Instant.now().toString(),
-    "build.commit" to (System.getenv("GITHUB_SHA") ?: ""),
-    "build.url" to (
-      System.getenv("GITHUB_RUN_ID")?.let { runId ->
-        "${System.getenv("GITHUB_SERVER_URL")}/${System.getenv("GITHUB_REPOSITORY")}/actions/runs/$runId"
-      } ?: ""
-      )
-  )
+  val props =
+    mapOf(
+      "build.timestamp" to Instant.now().toString(),
+      "build.commit" to (System.getenv("GITHUB_SHA") ?: ""),
+      "build.url" to (
+        System.getenv("GITHUB_RUN_ID")?.let { runId ->
+          "${System.getenv("GITHUB_SERVER_URL")}/${System.getenv("GITHUB_REPOSITORY")}/actions/runs/$runId"
+        } ?: ""
+      ),
+    )
 
   inputs.properties(props)
   outputs.file("$buildDir/build.properties")
@@ -92,9 +93,10 @@ tasks.withType<DependencyUpdatesTask> {
   resolutionStrategy {
     componentSelection {
       all {
-        val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview", "eap")
-          .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
-          .any { it.matches(candidate.version) }
+        val rejected =
+          listOf("alpha", "beta", "rc", "cr", "m", "preview", "eap")
+            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
+            .any { it.matches(candidate.version) }
         if (rejected) {
           reject("Release candidate")
         }

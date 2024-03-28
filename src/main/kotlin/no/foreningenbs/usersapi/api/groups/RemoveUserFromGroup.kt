@@ -13,13 +13,15 @@ class RemoveUserFromGroup(private val ldap: Ldap, private val dataProvider: Data
   val handler = handler@{ req: Request ->
     val groupname = Path.of("groupname")(req)
 
-    val group = dataProvider.getData().groups[Reference.GroupRef(groupname)]
-      ?: return@handler Response(Status.NOT_FOUND).body("Group not found")
+    val group =
+      dataProvider.getData().groups[Reference.GroupRef(groupname)]
+        ?: return@handler Response(Status.NOT_FOUND).body("Group not found")
 
     val username = Path.of("username")(req)
 
-    val user = dataProvider.getData().users[Reference.UserRef(username)]
-      ?: return@handler Response(Status.NOT_FOUND).body("User not found")
+    val user =
+      dataProvider.getData().users[Reference.UserRef(username)]
+        ?: return@handler Response(Status.NOT_FOUND).body("User not found")
 
     if (user.reference in group.members) {
       ldap.removeGroupMember(group.reference, user.reference)

@@ -15,7 +15,7 @@ object Config {
     ConfigurationProperties.systemProperties() overriding
       EnvironmentVariables() overriding
       ConfigurationProperties.fromOptionalFile(
-        Paths.get("overrides.properties").toFile()
+        Paths.get("overrides.properties").toFile(),
       ) overriding
       ConfigurationProperties.fromResource("defaults.properties")
 
@@ -30,17 +30,18 @@ object Config {
     val adminPassword = config[Key("users-api.ldap-admin-password", stringType)]
 
     // don't show these groups
-    val groupsIgnore = listOf(
-      "Domain Users",
-      "Domain Admins",
-      "Account Operators",
-      "Administrators",
-      "Backup Operators",
-      "Domain Computers",
-      "Domain Guests",
-      "Print Operators",
-      "Replicators"
-    )
+    val groupsIgnore =
+      listOf(
+        "Domain Users",
+        "Domain Admins",
+        "Account Operators",
+        "Administrators",
+        "Backup Operators",
+        "Domain Computers",
+        "Domain Guests",
+        "Print Operators",
+        "Replicators",
+      )
   }
 
   val ldap = Ldap()

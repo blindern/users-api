@@ -50,26 +50,28 @@ class ModifyUser(private val ldap: Ldap, private val dataProvider: DataProvider)
 
     dataProvider.invalidateCache()
 
-    val user = dataProvider.getData().users[Reference.UserRef(username)]
-      ?: return@handler Response(INTERNAL_SERVER_ERROR)
+    val user =
+      dataProvider.getData().users[Reference.UserRef(username)]
+        ?: return@handler Response(INTERNAL_SERVER_ERROR)
 
     Response(OK).with(
-      jsonMapLens of user.toResponse(
-        dataProvider,
-        withRelations = true,
-        withGroupsDetailed = true
-      )
+      jsonMapLens of
+        user.toResponse(
+          dataProvider,
+          withRelations = true,
+          withGroupsDetailed = true,
+        ),
     )
   }
 
   data class StringValue(
-    val value: String
+    val value: String,
   ) {
     fun toLdapValue() = Ldap.StringValue(value)
   }
 
   data class OptionalStringValue(
-    val value: String?
+    val value: String?,
   ) {
     fun toLdapValue() = Ldap.OptionalStringValue(value)
   }

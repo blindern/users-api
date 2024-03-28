@@ -59,15 +59,17 @@ class CreateUser(private val ldap: Ldap, private val dataProvider: DataProvider)
 
     dataProvider.invalidateCache()
 
-    val user = dataProvider.getData().users[Reference.UserRef(body.username)]
-      ?: return@handler Response(Status.INTERNAL_SERVER_ERROR)
+    val user =
+      dataProvider.getData().users[Reference.UserRef(body.username)]
+        ?: return@handler Response(Status.INTERNAL_SERVER_ERROR)
 
     Response(OK).with(
-      jsonMapLens of user.toResponse(
-        dataProvider,
-        withRelations = true,
-        withGroupsDetailed = true
-      )
+      jsonMapLens of
+        user.toResponse(
+          dataProvider,
+          withRelations = true,
+          withGroupsDetailed = true,
+        ),
     )
   }
 

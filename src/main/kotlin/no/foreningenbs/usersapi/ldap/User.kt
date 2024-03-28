@@ -8,7 +8,7 @@ data class User(
   val username: String,
   val email: String?,
   val realname: String?,
-  val phone: String?
+  val phone: String?,
 ) {
   val reference by lazy { UserRef(username) }
 
@@ -19,13 +19,13 @@ data class User(
       "username" to username,
       "email" to email,
       "realname" to realname,
-      "phone" to phone
+      "phone" to phone,
     )
 
   fun toResponse(
     dataProvider: DataProvider,
     withRelations: Boolean,
-    withGroupsDetailed: Boolean
+    withGroupsDetailed: Boolean,
   ): Map<String, Any?> {
     val map = toMutableMap()
 
@@ -57,7 +57,7 @@ data class User(
             dataProvider,
             withMembers = false,
             withOwners = false,
-            withMembersData = false
+            withMembersData = false,
           )
         }
         ?.toList()
@@ -75,12 +75,13 @@ data class User(
     const val realname = "cn"
     const val phone = "mobile"
 
-    val ldapFieldList = listOf(
-      id,
-      username,
-      email,
-      realname,
-      phone
-    )
+    val ldapFieldList =
+      listOf(
+        id,
+        username,
+        email,
+        realname,
+        phone,
+      )
   }
 }

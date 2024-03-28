@@ -28,7 +28,7 @@ class ListUsers(private val dataProvider: DataProvider) {
     if (usernames != null) {
       haveFilter = true
       userRefs.addAll(
-        usernames.split(",").map(Reference::UserRef)
+        usernames.split(",").map(Reference::UserRef),
       )
     }
 
@@ -37,7 +37,7 @@ class ListUsers(private val dataProvider: DataProvider) {
       userRefs.addAll(
         emails.split(",").mapNotNull { email ->
           data.emails[email]
-        }.flatten()
+        }.flatten(),
       )
     }
 
@@ -46,26 +46,31 @@ class ListUsers(private val dataProvider: DataProvider) {
       userRefs.addAll(
         phoneNumbers.split(",").mapNotNull { email ->
           data.phoneNumbers[email]
-        }.flatten()
+        }.flatten(),
       )
     }
 
-    val users = if (haveFilter) {
-      userRefs.mapNotNull { data.users[it] }
-    } else {
-      data.users.values
-    }
+    val users =
+      if (haveFilter) {
+        userRefs.mapNotNull { data.users[it] }
+      } else {
+        data.users.values
+      }
 
-    val grouplevel = grouplevelLens(req).let {
-      if (it < 0 || it > 3) 0
-      else it
-    }
+    val grouplevel =
+      grouplevelLens(req).let {
+        if (it < 0 || it > 3) {
+          0
+        } else {
+          it
+        }
+      }
 
     Response(OK).with(
       jsonArrayMapLens of
         users.map {
           it.toResponse(dataProvider, grouplevel >= 1, grouplevel >= 2)
-        }.toTypedArray()
+        }.toTypedArray(),
     )
   }
 }

@@ -10,7 +10,7 @@ data class Group(
   val name: String,
   val description: String?,
   val members: List<Reference>,
-  val owners: List<Reference>
+  val owners: List<Reference>,
 ) {
   val reference by lazy { GroupRef(name) }
 
@@ -19,20 +19,21 @@ data class Group(
       "id" to id,
       "unique_id" to name,
       "name" to name,
-      "description" to description
+      "description" to description,
     )
 
   private fun <R> List<Reference>.foldToType(mapper: (Reference) -> R) =
     fold(
       mutableMapOf(
         "users" to mutableListOf<R>(),
-        "groups" to mutableListOf()
-      )
+        "groups" to mutableListOf(),
+      ),
     ) { acc, ref ->
-      val type = when (ref) {
-        is UserRef -> "users"
-        is GroupRef -> "groups"
-      }
+      val type =
+        when (ref) {
+          is UserRef -> "users"
+          is GroupRef -> "groups"
+        }
       acc[type]!!.add(mapper(ref))
       acc
     }
@@ -41,17 +42,18 @@ data class Group(
     dataProvider: DataProvider,
     withMembers: Boolean,
     withOwners: Boolean,
-    withMembersData: Boolean
+    withMembersData: Boolean,
   ): Map<String, Any?> {
     val map = toMutableMap()
 
     if (withMembers) {
-      map["members"] = members.foldToType {
-        when (it) {
-          is UserRef -> it.username
-          is GroupRef -> it.groupname
+      map["members"] =
+        members.foldToType {
+          when (it) {
+            is UserRef -> it.username
+            is GroupRef -> it.groupname
+          }
         }
-      }
 
       map["members_relation"] = dataProvider.getData().groupMembers[reference]
         ?.map { (userRef, groupRefList) ->
@@ -62,12 +64,13 @@ data class Group(
     }
 
     if (withOwners) {
-      map["owners"] = owners.foldToType {
-        when (it) {
-          is UserRef -> it.username
-          is GroupRef -> it.groupname
+      map["owners"] =
+        owners.foldToType {
+          when (it) {
+            is UserRef -> it.username
+            is GroupRef -> it.groupname
+          }
         }
-      }
     }
 
     if (withMembersData) {
@@ -78,11 +81,12 @@ data class Group(
           // Some user references point to invalid users. Typically because the
           // user has been changed or removed after the reference was added.
           data.users[it]?.let { user ->
-            it.username to user.toResponse(
-              dataProvider,
-              withRelations = true,
-              withGroupsDetailed = false
-            )
+            it.username to
+              user.toResponse(
+                dataProvider,
+                withRelations = true,
+                withGroupsDetailed = false,
+              )
           }
         }
         ?.toMap()
@@ -100,12 +104,13 @@ data class Group(
     const val description = "description"
     const val owners = "owner"
 
-    val ldapFieldList = listOf(
-      id,
-      name,
-      members,
-      description,
-      owners
-    )
+    val ldapFieldList =
+      listOf(
+        id,
+        name,
+        members,
+        description,
+        owners,
+      )
   }
 }

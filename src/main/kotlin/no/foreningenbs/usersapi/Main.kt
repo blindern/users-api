@@ -40,68 +40,76 @@ fun main() {
   server(ldap, dataProvider).start()
 }
 
-val loggingFilter = Filter { next ->
-  { req ->
-    try {
-      val res = next(req)
-      logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
-      res
-    } catch (e: Throwable) {
-      logger.error("Exception caught for: ${req.method} ${req.uri} (agent: ${req.header("user-agent")})", e)
-      Response(INTERNAL_SERVER_ERROR).body("Request failed. See logs")
+val loggingFilter =
+  Filter { next ->
+    { req ->
+      try {
+        val res = next(req)
+        logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
+        res
+      } catch (e: Throwable) {
+        logger.error("Exception caught for: ${req.method} ${req.uri} (agent: ${req.header("user-agent")})", e)
+        Response(INTERNAL_SERVER_ERROR).body("Request failed. See logs")
+      }
     }
   }
-}
 
-fun server(ldap: Ldap, dataProvider: DataProvider) =
-  ServerFilters.GZip()
-    .then(loggingFilter)
-    .then(app(ldap, dataProvider))
-    .asServer(Jetty(8000))
+fun server(
+  ldap: Ldap,
+  dataProvider: DataProvider,
+) = ServerFilters.GZip()
+  .then(loggingFilter)
+  .then(app(ldap, dataProvider))
+  .asServer(Jetty(8000))
 
-fun app(ldap: Ldap, dataProvider: DataProvider): HttpHandler {
+fun app(
+  ldap: Ldap,
+  dataProvider: DataProvider,
+): HttpHandler {
+  val authFilter =
+    AuthFilter(
+      Hmac(Config.hmacTimeout, Config.hmacKey),
+      // Currently using hmac key as also directly API key. We might
+      // want to revisit this later, e.g. giving each application
+      // its own key.
+      Config.hmacKey,
+      Config.enforceAuth,
+    ).filter
 
-  val authFilter = AuthFilter(
-    Hmac(Config.hmacTimeout, Config.hmacKey),
-    // Currently using hmac key as also directly API key. We might
-    // want to revisit this later, e.g. giving each application
-    // its own key.
-    Config.hmacKey,
-    Config.enforceAuth
-  ).filter
-
-  val routes = routes(
-    "/" bind GET to {
-      Response(OK).body("https://github.com/blindern/users-api")
-    },
-    "/health" bind GET to HealthController().handler,
-    authFilter
-      .then(
-        routes(
-          "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
-          WrappedResponse.filter.then(
-            routes(
-              "/users" bind GET to ListUsers(dataProvider).handler,
-              "/user/{username}" bind GET to GetUser(dataProvider).handler,
-              "/groups" bind GET to ListGroups(dataProvider).handler,
-              "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
-              "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
-            )
+  val routes =
+    routes(
+      "/" bind GET to {
+        Response(OK).body("https://github.com/blindern/users-api")
+      },
+      "/health" bind GET to HealthController().handler,
+      authFilter
+        .then(
+          routes(
+            "/invalidate-cache" bind POST to InvalidateCache(dataProvider).handler,
+            WrappedResponse.filter.then(
+              routes(
+                "/users" bind GET to ListUsers(dataProvider).handler,
+                "/user/{username}" bind GET to GetUser(dataProvider).handler,
+                "/groups" bind GET to ListGroups(dataProvider).handler,
+                "/group/{groupname}" bind GET to GetGroup(dataProvider).handler,
+                "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler,
+              ),
+            ),
+            "/v2" bind
+              routes(
+                "/users" bind GET to ListUsers(dataProvider).handler,
+                "/users" bind POST to CreateUser(ldap, dataProvider).handler,
+                "/users/{username}" bind GET to GetUser(dataProvider).handler,
+                "/users/{username}/modify" bind POST to ModifyUser(ldap, dataProvider).handler,
+                "/groups" bind GET to ListGroups(dataProvider).handler,
+                "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
+                "/groups/{groupname}/members/users/{username}" bind PUT to AddUserToGroup(ldap, dataProvider).handler,
+                "/groups/{groupname}/members/users/{username}" bind DELETE to RemoveUserFromGroup(ldap, dataProvider).handler,
+                "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler,
+              ),
           ),
-          "/v2" bind routes(
-            "/users" bind GET to ListUsers(dataProvider).handler,
-            "/users" bind POST to CreateUser(ldap, dataProvider).handler,
-            "/users/{username}" bind GET to GetUser(dataProvider).handler,
-            "/users/{username}/modify" bind POST to ModifyUser(ldap, dataProvider).handler,
-            "/groups" bind GET to ListGroups(dataProvider).handler,
-            "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
-            "/groups/{groupname}/members/users/{username}" bind PUT to AddUserToGroup(ldap, dataProvider).handler,
-            "/groups/{groupname}/members/users/{username}" bind DELETE to RemoveUserFromGroup(ldap, dataProvider).handler,
-            "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler
-          )
-        )
-      )
-  )
+        ),
+    )
 
   return ServerFilters.CatchLensFailure {
     logger.debug("Lens failure: ${it.message}", it)

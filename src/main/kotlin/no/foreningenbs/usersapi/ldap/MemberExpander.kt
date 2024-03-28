@@ -13,7 +13,10 @@ class MemberExpander(private val groups: Map<GroupRef, Group>) {
    * @return Array of members of the current group, referencing the groups that
    * gave this association
    */
-  fun parse(group: Group, visited: List<String> = emptyList()): Map<UserRef, List<GroupRef>> {
+  fun parse(
+    group: Group,
+    visited: List<String> = emptyList(),
+  ): Map<UserRef, List<GroupRef>> {
     if (group.dn in visited) {
       return emptyMap()
     }

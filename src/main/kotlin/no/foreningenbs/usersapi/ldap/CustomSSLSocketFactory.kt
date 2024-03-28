@@ -15,11 +15,12 @@ class CustomSSLSocketFactory : SSLSocketFactory() {
     val ks = KeyStore.getInstance(KeyStore.getDefaultType())
 
     val certificateFactoryX509 = CertificateFactory.getInstance("X.509")
-    val certificate = javaClass.classLoader.getResource("ca.crt")!!
-      .openStream()
-      .use {
-        certificateFactoryX509.generateCertificate(it)
-      }
+    val certificate =
+      javaClass.classLoader.getResource("ca.crt")!!
+        .openStream()
+        .use {
+          certificateFactoryX509.generateCertificate(it)
+        }
 
     ks.load(null, null)
     ks.setCertificateEntry("ca", certificate)
@@ -36,34 +37,38 @@ class CustomSSLSocketFactory : SSLSocketFactory() {
     return ctx.socketFactory
   }
 
-  override fun createSocket(host: String?, port: Int): Socket =
-    sf.createSocket(host, port)
+  override fun createSocket(
+    host: String?,
+    port: Int,
+  ): Socket = sf.createSocket(host, port)
 
   override fun createSocket(
     host: String?,
     port: Int,
     localHost: InetAddress?,
-    localPort: Int
-  ): Socket =
-    sf.createSocket(host, port, localHost, localPort)
+    localPort: Int,
+  ): Socket = sf.createSocket(host, port, localHost, localPort)
 
-  override fun createSocket(host: InetAddress?, port: Int): Socket =
-    sf.createSocket(host, port)
+  override fun createSocket(
+    host: InetAddress?,
+    port: Int,
+  ): Socket = sf.createSocket(host, port)
 
   override fun createSocket(
     address: InetAddress?,
     port: Int,
     localAddress: InetAddress?,
-    localPort: Int
-  ): Socket =
-    sf.createSocket(address, port, localAddress, localPort)
+    localPort: Int,
+  ): Socket = sf.createSocket(address, port, localAddress, localPort)
 
-  override fun createSocket(s: Socket?, host: String?, port: Int, autoClose: Boolean): Socket =
-    sf.createSocket(s, host, port, autoClose)
+  override fun createSocket(
+    s: Socket?,
+    host: String?,
+    port: Int,
+    autoClose: Boolean,
+  ): Socket = sf.createSocket(s, host, port, autoClose)
 
-  override fun getDefaultCipherSuites(): Array<String> =
-    sf.defaultCipherSuites
+  override fun getDefaultCipherSuites(): Array<String> = sf.defaultCipherSuites
 
-  override fun getSupportedCipherSuites(): Array<String> =
-    sf.supportedCipherSuites
+  override fun getSupportedCipherSuites(): Array<String> = sf.supportedCipherSuites
 }

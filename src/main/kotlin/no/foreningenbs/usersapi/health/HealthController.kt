@@ -20,7 +20,7 @@ class HealthController {
   val handler: HttpHandler = {
     Response(OK)
       .with(
-        bodyLens of response
+        bodyLens of response,
       )
   }
 }
@@ -34,7 +34,7 @@ data class HealthResponse(
       "unknown"
     },
   val startTime: String =
-    Instant.ofEpochMilli(ManagementFactory.getRuntimeMXBean().startTime).toString()
+    Instant.ofEpochMilli(ManagementFactory.getRuntimeMXBean().startTime).toString(),
 )
 
 data class HealthBuildInfo(
@@ -55,21 +55,23 @@ fun getHealthBuildInfo(): HealthBuildInfo {
     return HealthBuildInfo(
       timestamp = null,
       commit = null,
-      url = null
+      url = null,
     )
   }
 
-  val properties = Properties().apply {
-    f.bufferedReader().use {
-      load(it)
+  val properties =
+    Properties().apply {
+      f.bufferedReader().use {
+        load(it)
+      }
     }
-  }
 
   return HealthBuildInfo(
-    timestamp = properties.getProperty("build.timestamp").let {
-      if (it.isEmpty()) null else Instant.parse(it)
-    },
+    timestamp =
+      properties.getProperty("build.timestamp").let {
+        if (it.isEmpty()) null else Instant.parse(it)
+      },
     commit = properties.getProperty("build.commit"),
-    url = properties.getProperty("build.url")
+    url = properties.getProperty("build.url"),
   )
 }

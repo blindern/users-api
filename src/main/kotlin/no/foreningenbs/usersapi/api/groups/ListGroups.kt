@@ -15,17 +15,19 @@ class ListGroups(private val dataProvider: DataProvider) {
     val groupnames = groupnamesLens(req)
     val data = dataProvider.getData()
 
-    val groups = data.groups.values
-      .let { list ->
-        if (groupnames == null) list
-        else {
-          val names = groupnames.split(",")
-          list.filter {
-            it.name in names
+    val groups =
+      data.groups.values
+        .let { list ->
+          if (groupnames == null) {
+            list
+          } else {
+            val names = groupnames.split(",")
+            list.filter {
+              it.name in names
+            }
           }
         }
-      }
-      .toList()
+        .toList()
 
     Response(OK).with(
       jsonArrayMapLens of
@@ -34,9 +36,9 @@ class ListGroups(private val dataProvider: DataProvider) {
             dataProvider,
             withMembers = false,
             withOwners = false,
-            withMembersData = false
+            withMembersData = false,
           )
-        }.toTypedArray()
+        }.toTypedArray(),
     )
   }
 }

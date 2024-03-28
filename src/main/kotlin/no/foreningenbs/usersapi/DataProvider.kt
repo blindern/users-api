@@ -5,11 +5,12 @@ import no.foreningenbs.usersapi.ldap.AllData
 import no.foreningenbs.usersapi.ldap.Ldap
 
 class DataProvider(config: Config, private val ldap: Ldap) {
-  private val cache = Caffeine.newBuilder()
-    .expireAfterWrite(config.cacheTimeout)
-    .build<String, AllData> {
-      ldap.getAllData()
-    }
+  private val cache =
+    Caffeine.newBuilder()
+      .expireAfterWrite(config.cacheTimeout)
+      .build<String, AllData> {
+        ldap.getAllData()
+      }
 
   fun getData(): AllData = cache["cache"]!!
 

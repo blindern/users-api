@@ -25,20 +25,25 @@ import javax.naming.ldap.StartTlsResponse
 class Ldap(private val config: Config) {
   private val dnPattern = "^(.+?)=(.+?),(.+)$".toRegex().toPattern()
 
-  fun testCredentials(username: String, password: String) =
-    try {
-      withConnection(userDn(username), password) { ctx ->
-        // Perform a search so it will force a bind
-        ctx.search(config.ldap.usersDn, "(uid=%s)".format(escape(username)), listOf(User.id))
-      }
-      true
-    } catch (e: AuthenticationException) {
-      false
+  fun testCredentials(
+    username: String,
+    password: String,
+  ) = try {
+    withConnection(userDn(username), password) { ctx ->
+      // Perform a search so it will force a bind
+      ctx.search(config.ldap.usersDn, "(uid=%s)".format(escape(username)), listOf(User.id))
     }
+    true
+  } catch (e: AuthenticationException) {
+    false
+  }
 
   fun userRdn(username: String) = "%s=%s".format(config.ldap.userRdnName, escape(username))
+
   fun userDn(username: String) = "%s,%s".format(userRdn(username), config.ldap.usersDn)
+
   fun groupRdn(groupname: String) = "%s=%s".format(config.ldap.groupRdnName, escape(groupname))
+
   fun groupDn(groupname: String) = "%s,%s".format(groupRdn(groupname), config.ldap.groupsDn)
 
   fun <R> withConnection(
@@ -47,10 +52,11 @@ class Ldap(private val config: Config) {
     allowSlave: Boolean = true,
     block: (LdapContext) -> R,
   ): R {
-    val server = when (allowSlave) {
-      true -> config.ldap.server
-      false -> config.ldap.masterServer
-    }
+    val server =
+      when (allowSlave) {
+        true -> config.ldap.server
+        false -> config.ldap.masterServer
+      }
 
     val env = Hashtable<String, Any>(11)
     env[Context.INITIAL_CONTEXT_FACTORY] = "com.sun.jndi.ldap.LdapCtxFactory"
@@ -85,7 +91,7 @@ class Ldap(private val config: Config) {
             it.attributes[User.username].first(),
             it.attributes[User.email]?.first(),
             it.attributes[User.realname]?.first(),
-            it.attributes[User.phone]?.first()
+            it.attributes[User.phone]?.first(),
           )
         }
         .sortedBy { it.realname }
@@ -98,8 +104,11 @@ class Ldap(private val config: Config) {
   fun getGroups(filter: String? = null): Map<GroupRef, Group> {
     val objectClassFilter = "(objectClass=posixGroup)"
     val fullFilter =
-      if (filter == null) objectClassFilter
-      else "(&%s%s)".format(objectClassFilter, filter)
+      if (filter == null) {
+        objectClassFilter
+      } else {
+        "(&%s%s)".format(objectClassFilter, filter)
+      }
 
     return withConnection { ctx ->
       ctx
@@ -119,7 +128,7 @@ class Ldap(private val config: Config) {
             res.attributes[Group.name].first(),
             res.attributes[Group.description]?.first(),
             members.toReference(),
-            owners.toReference()
+            owners.toReference(),
           )
         }
         .sortedBy { it.name }
@@ -147,55 +156,59 @@ class Ldap(private val config: Config) {
       }
     }
 
-  private fun buildOrFilter(field: String, values: List<String>) =
-    values
-      .map {
-        "(%s=%s)".format(
-          field,
-          escape(it)
-        )
-      }
-      .let {
-        require(values.isNotEmpty())
-        "(|%s)".format(it.joinToString(""))
-      }
+  private fun buildOrFilter(
+    field: String,
+    values: List<String>,
+  ) = values
+    .map {
+      "(%s=%s)".format(
+        field,
+        escape(it),
+      )
+    }
+    .let {
+      require(values.isNotEmpty())
+      "(|%s)".format(it.joinToString(""))
+    }
 
-  fun getUsersByNames(names: List<String>): Map<UserRef, User> =
-    getUsers(buildOrFilter(User.username, names))
+  fun getUsersByNames(names: List<String>): Map<UserRef, User> = getUsers(buildOrFilter(User.username, names))
 
-  fun getGroupsByNames(names: List<String>): Map<GroupRef, Group> =
-    getGroups(buildOrFilter(Group.name, names))
+  fun getGroupsByNames(names: List<String>): Map<GroupRef, Group> = getGroups(buildOrFilter(Group.name, names))
 
   fun getNextUid() =
     withConnection { ctx ->
-      val max = ctx
-        .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.id))
-        .map { it.attributes[User.id].first().toInt() }
-        .filter { it < 60_000 }
-        .maxOrNull() ?: 9999
+      val max =
+        ctx
+          .search(config.ldap.usersDn, "(objectClass=posixAccount)", listOf(User.id))
+          .map { it.attributes[User.id].first().toInt() }
+          .filter { it < 60_000 }
+          .maxOrNull() ?: 9999
 
       max + 1
     }
 
   fun getNextGid() =
     withConnection { ctx ->
-      val max = ctx
-        .search(config.ldap.groupsDn, "(objectClass=posixGroup)", listOf(Group.id))
-        .maxOfOrNull { it.attributes[Group.id].first().toInt() } ?: 0
+      val max =
+        ctx
+          .search(config.ldap.groupsDn, "(objectClass=posixGroup)", listOf(Group.id))
+          .maxOfOrNull { it.attributes[Group.id].first().toInt() } ?: 0
 
       max + 1
     }
 
   fun generatePasswordHash(plaintext: String): String {
-    val salt = ByteArray(4).also {
-      SecureRandom().nextBytes(it)
-    }
+    val salt =
+      ByteArray(4).also {
+        SecureRandom().nextBytes(it)
+      }
 
-    val hash = MessageDigest.getInstance("SHA-1").let {
-      it.update(plaintext.encodeToByteArray())
-      it.update(salt)
-      it.digest()
-    }
+    val hash =
+      MessageDigest.getInstance("SHA-1").let {
+        it.update(plaintext.encodeToByteArray())
+        it.update(salt)
+        it.digest()
+      }
 
     return "{SSHA}" + Base64.getEncoder().encodeToString(hash + salt)
   }
@@ -264,6 +277,7 @@ class Ldap(private val config: Config) {
   }
 
   data class StringValue(val value: String)
+
   data class OptionalStringValue(val value: String?)
 
   /**
@@ -284,10 +298,11 @@ class Ldap(private val config: Config) {
 
     withConnection(allowSlave = false) { ctx ->
       val userDn = userDn(username)
-      val existingAttr = ctx.getAttributes(
-        userDn,
-        arrayOf("givenName", "sn", "phone", "sambaLMPassword", "sambaNTPassword")
-      )
+      val existingAttr =
+        ctx.getAttributes(
+          userDn,
+          arrayOf("givenName", "sn", "phone", "sambaLMPassword", "sambaNTPassword"),
+        )
 
       val attributes = mutableListOf<ModificationItem>()
 
@@ -308,10 +323,11 @@ class Ldap(private val config: Config) {
       }
 
       if (firstName != null || lastName != null) {
-        val fullName = listOf(
-          firstName?.value ?: existingAttr.get("givenName").first(),
-          lastName?.value ?: existingAttr.get("sn").first(),
-        ).joinToString(" ")
+        val fullName =
+          listOf(
+            firstName?.value ?: existingAttr.get("givenName").first(),
+            lastName?.value ?: existingAttr.get("sn").first(),
+          ).joinToString(" ")
 
         update(BasicAttribute("cn", fullName))
         update(BasicAttribute("displayName", fullName))
@@ -355,26 +371,32 @@ class Ldap(private val config: Config) {
   /**
    * Add member to a group.
    */
-  fun addGroupMember(group: GroupRef, member: Reference) {
+  fun addGroupMember(
+    group: GroupRef,
+    member: Reference,
+  ) {
     withConnection(allowSlave = false) { ctx ->
-      val existingAttr = ctx.getAttributes(
-        groupDn(group.groupname),
-        arrayOf(Group.members)
-      )
+      val existingAttr =
+        ctx.getAttributes(
+          groupDn(group.groupname),
+          arrayOf(Group.members),
+        )
 
-      val memberValue = when (member) {
-        is GroupRef -> groupDn(member.groupname)
-        is UserRef -> userDn(member.username)
-      }
+      val memberValue =
+        when (member) {
+          is GroupRef -> groupDn(member.groupname)
+          is UserRef -> userDn(member.username)
+        }
 
       val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
 
       if (memberValue !in membersAttribute) {
         membersAttribute.add(memberValue)
 
-        val attributes = listOf(
-          ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute)
-        )
+        val attributes =
+          listOf(
+            ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute),
+          )
 
         ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
       }
@@ -384,26 +406,32 @@ class Ldap(private val config: Config) {
   /**
    * Remove member from a group.
    */
-  fun removeGroupMember(group: GroupRef, member: Reference) {
+  fun removeGroupMember(
+    group: GroupRef,
+    member: Reference,
+  ) {
     withConnection(allowSlave = false) { ctx ->
-      val existingAttr = ctx.getAttributes(
-        groupDn(group.groupname),
-        arrayOf(Group.members)
-      )
+      val existingAttr =
+        ctx.getAttributes(
+          groupDn(group.groupname),
+          arrayOf(Group.members),
+        )
 
-      val memberValue = when (member) {
-        is GroupRef -> groupDn(member.groupname)
-        is UserRef -> userDn(member.username)
-      }
+      val memberValue =
+        when (member) {
+          is GroupRef -> groupDn(member.groupname)
+          is UserRef -> userDn(member.username)
+        }
 
       val membersAttribute = existingAttr[Group.members] ?: BasicAttribute(Group.members)
 
       if (memberValue in membersAttribute) {
         membersAttribute.remove(memberValue)
 
-        val attributes = listOf(
-          ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute)
-        )
+        val attributes =
+          listOf(
+            ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute),
+          )
 
         ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
       }
@@ -418,16 +446,18 @@ class Ldap(private val config: Config) {
     val groups = getGroups()
 
     val memberExpander = MemberExpander(groups)
-    val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>> = groups.values.associate { group ->
-      val members = memberExpander.parse(group)
-        .toList()
-        .sortedBy { (userRef, _) ->
-          users[userRef]?.realname ?: userRef.username
-        }
-        .toMap()
+    val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>> =
+      groups.values.associate { group ->
+        val members =
+          memberExpander.parse(group)
+            .toList()
+            .sortedBy { (userRef, _) ->
+              users[userRef]?.realname ?: userRef.username
+            }
+            .toMap()
 
-      group.reference to members
-    }
+        group.reference to members
+      }
 
     // Make reference to groups from users.
     val userGroups = mutableMapOf<UserRef, MutableMap<GroupRef, List<GroupRef>>>()
@@ -492,12 +522,13 @@ class Ldap(private val config: Config) {
  * Thanks and credit to Iain Colledge for the research and function.
  * (from MediaWiki LdapAuthentication-extension)
  */
-fun escape(value: String) = value
-  .replace("\\", "\\5c")
-  .replace("(", "\\28")
-  .replace(")", "\\29")
-  .replace("*", "\\2a")
-  .replace(0x0.toString(), "\\00")
+fun escape(value: String) =
+  value
+    .replace("\\", "\\5c")
+    .replace("(", "\\28")
+    .replace(")", "\\29")
+    .replace("*", "\\2a")
+    .replace(0x0.toString(), "\\00")
 
 fun <E> Enumeration<E>.toList(): List<E> {
   val list = mutableListOf<E>()
@@ -508,9 +539,14 @@ fun <E> Enumeration<E>.toList(): List<E> {
 }
 
 fun Attribute.first(): String = get() as String
+
 fun Attribute.list(): List<String> = all?.toList()?.map { it as String } ?: emptyList()
 
-fun LdapContext.search(dn: String, filter: String, fields: List<String>): List<SearchResult> {
+fun LdapContext.search(
+  dn: String,
+  filter: String,
+  fields: List<String>,
+): List<SearchResult> {
   val searchControls = SearchControls()
   searchControls.searchScope = SearchControls.ONELEVEL_SCOPE
   searchControls.returningAttributes = fields.toTypedArray()
@@ -525,7 +561,7 @@ data class AllData(
   val userGroups: Map<UserRef, Map<GroupRef, List<GroupRef>>>,
   val userOwns: Map<UserRef, Map<GroupRef, List<GroupRef>>>,
   val emails: Map<String, List<UserRef>>,
-  val phoneNumbers: Map<String, List<UserRef>>
+  val phoneNumbers: Map<String, List<UserRef>>,
 )
 
 sealed class Reference {

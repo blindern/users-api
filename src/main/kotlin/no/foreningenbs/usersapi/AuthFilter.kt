@@ -17,62 +17,71 @@ private val logger = KotlinLogging.logger {}
 class AuthFilter(
   private val hmac: Hmac,
   private val authKey: String,
-  private val enforceAuth: Boolean
+  private val enforceAuth: Boolean,
 ) {
-  val filter = Filter { next ->
-    filter@{ req ->
-      // If a method is used, it must be valid.
+  val filter =
+    Filter { next ->
+      filter@{ req ->
+        // If a method is used, it must be valid.
 
-      // HMAC
-      hmacHashHeader(req)?.let { hmacHashHeader ->
-        // Verify given time is within threshold (limits replay window)
-        if (!hmac.isValidTime(hmacTimeHeader(req))) {
-          return@filter Response(Status.UNAUTHORIZED)
-            .body("HMAC-authorization failed: Time check failed")
+        // HMAC
+        hmacHashHeader(req)?.let { hmacHashHeader ->
+          // Verify given time is within threshold (limits replay window)
+          if (!hmac.isValidTime(hmacTimeHeader(req))) {
+            return@filter Response(Status.UNAUTHORIZED)
+              .body("HMAC-authorization failed: Time check failed")
+          }
+
+          // Due to running behind a reverse proxy serving us on /users-api
+          // publicly, we validate both internal and public HMAC urls.
+          if (
+            generateHmacHash(req) != hmacHashHeader &&
+            generateHmacHash(req, "/users-api") != hmacHashHeader
+          ) {
+            return@filter Response(Status.UNAUTHORIZED)
+              .body("HMAC-authorization failed: Invalid hash")
+          }
+
+          return@filter next(req)
         }
 
-        // Due to running behind a reverse proxy serving us on /users-api
-        // publicly, we validate both internal and public HMAC urls.
-        if (
-          generateHmacHash(req) != hmacHashHeader &&
-          generateHmacHash(req, "/users-api") != hmacHashHeader
-        ) {
-          return@filter Response(Status.UNAUTHORIZED)
-            .body("HMAC-authorization failed: Invalid hash")
+        // Bearer
+        getBearer(req)?.let { bearerToken ->
+          return@filter if (bearerToken == authKey) {
+            next(req)
+          } else {
+            Response(Status.UNAUTHORIZED).body("Invalid credentials")
+          }
         }
 
-        return@filter next(req)
-      }
-
-      // Bearer
-      getBearer(req)?.let { bearerToken ->
-        return@filter if (bearerToken == authKey)
+        // Special case for development.
+        if (!enforceAuth) {
+          logger.warn("Request served without authentication due to configuration override")
           next(req)
-        else Response(Status.UNAUTHORIZED).body("Invalid credentials")
+        } else {
+          Response(Status.UNAUTHORIZED).body("No authentication given")
+        }
       }
-
-      // Special case for development.
-      if (!enforceAuth) {
-        logger.warn("Request served without authentication due to configuration override")
-        next(req)
-      } else Response(Status.UNAUTHORIZED).body("No authentication given")
     }
-  }
 
-  private fun generateHmacHash(req: Request, pathPrefix: String = "") =
-    hmac.generateHash(
-      hmacTimeHeader(req),
-      req.method,
-      req.uri.path(pathPrefix + req.uri.path),
-      req.formAsMap()
-    )
+  private fun generateHmacHash(
+    req: Request,
+    pathPrefix: String = "",
+  ) = hmac.generateHash(
+    hmacTimeHeader(req),
+    req.method,
+    req.uri.path(pathPrefix + req.uri.path),
+    req.formAsMap(),
+  )
 
   private fun getBearer(req: Request) =
     bearerHeader(req)?.let {
       val prefix = "bearer "
-      if (it.startsWith(prefix, ignoreCase = true))
+      if (it.startsWith(prefix, ignoreCase = true)) {
         it.substring(prefix.length)
-      else null
+      } else {
+        null
+      }
     }
 
   companion object {

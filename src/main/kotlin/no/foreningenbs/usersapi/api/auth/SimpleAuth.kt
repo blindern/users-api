@@ -24,27 +24,29 @@ class SimpleAuth(private val ldap: Ldap, private val dataProvider: DataProvider)
   private val bodyLens = Body.auto<Content>().toLens()
 
   val handler = handler@{ req: Request ->
-    val body = if (Header.CONTENT_TYPE(req)?.value == APPLICATION_FORM_URLENCODED.value) {
-      val strictFormBody = Body.webForm(Validator.Strict, usernameField, passwordField).toLens()
-      val validForm = strictFormBody.extract(req)
-      Content(
-        usernameField.extract(validForm),
-        passwordField.extract(validForm)
-      )
-    } else {
-      bodyLens(req)
-    }
+    val body =
+      if (Header.CONTENT_TYPE(req)?.value == APPLICATION_FORM_URLENCODED.value) {
+        val strictFormBody = Body.webForm(Validator.Strict, usernameField, passwordField).toLens()
+        val validForm = strictFormBody.extract(req)
+        Content(
+          usernameField.extract(validForm),
+          passwordField.extract(validForm),
+        )
+      } else {
+        bodyLens(req)
+      }
 
     if (body.username.isEmpty() || body.password.isEmpty()) {
       return@handler Response(BAD_REQUEST).body("Missing data")
     }
 
     if (ldap.testCredentials(body.username, body.password)) {
-      val user = dataProvider.getData().users[Reference.UserRef(body.username)]!!.toResponse(
-        dataProvider,
-        withRelations = true,
-        withGroupsDetailed = true
-      )
+      val user =
+        dataProvider.getData().users[Reference.UserRef(body.username)]!!.toResponse(
+          dataProvider,
+          withRelations = true,
+          withGroupsDetailed = true,
+        )
       return@handler Response(OK).with(jsonMapLens of user)
     }
 
@@ -53,6 +55,6 @@ class SimpleAuth(private val ldap: Ldap, private val dataProvider: DataProvider)
 
   data class Content(
     val username: String,
-    val password: String
+    val password: String,
   )
 }

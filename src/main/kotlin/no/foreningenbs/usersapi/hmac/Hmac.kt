@@ -14,9 +14,10 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 class Hmac(private val timeout: Long, private val key: String) {
-  private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
+  private val moshi =
+    Moshi.Builder()
+      .add(KotlinJsonAdapterFactory())
+      .build()
 
   fun isValidTime(time: Long): Boolean {
     val now = Instant.now().epochSecond
@@ -29,7 +30,7 @@ class Hmac(private val timeout: Long, private val key: String) {
     return req
       .with(
         hmacHashHeader of
-          generateHash(time, req.method, req.uri, req.formAsMap())
+          generateHash(time, req.method, req.uri, req.formAsMap()),
       )
       .with(hmacTimeHeader of time)
   }
@@ -38,23 +39,28 @@ class Hmac(private val timeout: Long, private val key: String) {
     time: Long,
     method: Method,
     uri: Uri,
-    vars: Map<String, List<String?>>
+    vars: Map<String, List<String?>>,
   ): String {
-    val flatVars = vars
-      .map { (key, list) ->
-        // Only pick first variable if multiple is given
-        key to list[0]
-      }
-      .toMap()
+    val flatVars =
+      vars
+        .map { (key, list) ->
+          // Only pick first variable if multiple is given
+          key to list[0]
+        }
+        .toMap()
 
-    val dataList = listOf(
-      time.toString(),
-      method.toString(),
-      uri.toString(),
-      // In the old PHP version, an empty map results in an empty array.
-      if (flatVars.isEmpty()) emptyList<String>()
-      else flatVars
-    )
+    val dataList =
+      listOf(
+        time.toString(),
+        method.toString(),
+        uri.toString(),
+        // In the old PHP version, an empty map results in an empty array.
+        if (flatVars.isEmpty()) {
+          emptyList<String>()
+        } else {
+          flatVars
+        },
+      )
 
     // Escape forward slash as PHPs json_encode also does it,
     // as we need to maintain compatibility with old HMAC code.

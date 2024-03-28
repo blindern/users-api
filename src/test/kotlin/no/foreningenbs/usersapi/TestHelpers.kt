@@ -13,39 +13,43 @@ import org.http4k.core.Request
 const val MOCK_AUTH_VALID_USERNAME = "halvargimnes"
 const val MOCK_AUTH_VALID_PASSWORD = "password123"
 
-val mockUser1 = User(
-  1,
-  "halvargimnes",
-  "halvargimnes@foreningenbs.no",
-  "Halvar Gimnes",
-  null
-)
-
-val mockUser2 = User(
-  2,
-  "admin1",
-  null,
-  "Admin 1",
-  null
-)
-
-val mockUsers = mapOf(
-  mockUser1.reference to mockUser1,
-  mockUser2.reference to mockUser2
-)
-
-val mockAdminGroup = Group(
-  "cn=admin,ou=Groups,dc=foreningenbs,dc=no",
-  21,
-  "admin",
-  null,
-  listOf(
-    mockUser2.reference
-  ),
-  listOf(
-    mockUser2.reference
+val mockUser1 =
+  User(
+    1,
+    "halvargimnes",
+    "halvargimnes@foreningenbs.no",
+    "Halvar Gimnes",
+    null,
   )
-)
+
+val mockUser2 =
+  User(
+    2,
+    "admin1",
+    null,
+    "Admin 1",
+    null,
+  )
+
+val mockUsers =
+  mapOf(
+    mockUser1.reference to mockUser1,
+    mockUser2.reference to mockUser2,
+  )
+
+val mockAdminGroup =
+  Group(
+    "cn=admin,ou=Groups,dc=foreningenbs,dc=no",
+    21,
+    "admin",
+    null,
+    listOf(
+      mockUser2.reference,
+    ),
+    listOf(
+      mockUser2.reference,
+    ),
+  )
 
 val mockGroups =
   listOf(
@@ -55,13 +59,13 @@ val mockGroups =
       "beboer",
       null,
       listOf(
-        mockUser1.reference
+        mockUser1.reference,
       ),
       listOf(
-        mockAdminGroup.reference
-      )
+        mockAdminGroup.reference,
+      ),
     ),
-    mockAdminGroup
+    mockAdminGroup,
   ).map { GroupRef(it.name) to it }.toMap()
 
 fun createLdapMock(): Ldap =

@@ -13,16 +13,18 @@ import org.http4k.lens.Path
 class GetGroup(private val dataProvider: DataProvider) {
   val handler = handler@{ req: Request ->
     val groupname = Path.of("groupname")(req)
-    val group = dataProvider.getData().groups[Reference.GroupRef(groupname)]
-      ?: return@handler Response(Status.NOT_FOUND)
+    val group =
+      dataProvider.getData().groups[Reference.GroupRef(groupname)]
+        ?: return@handler Response(Status.NOT_FOUND)
 
     Response(OK).with(
-      jsonMapLens of group.toResponse(
-        dataProvider,
-        withMembers = true,
-        withOwners = true,
-        withMembersData = true
-      )
+      jsonMapLens of
+        group.toResponse(
+          dataProvider,
+          withMembers = true,
+          withOwners = true,
+          withMembersData = true,
+        ),
     )
   }
 }
