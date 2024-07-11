@@ -1,6 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.Instant
 
 plugins {
@@ -47,9 +47,9 @@ dependencies {
 
 apply(plugin = "com.karumi.kotlin-snapshot")
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    jvmTarget = "21"
+kotlin {
+  compilerOptions {
+    jvmTarget = JvmTarget.JVM_22
   }
 }
 
@@ -80,10 +80,10 @@ tasks.register("dockerBuildProperties") {
     )
 
   inputs.properties(props)
-  outputs.file("$buildDir/build.properties")
+  outputs.file("${layout.buildDirectory}/build.properties")
 
   doLast {
-    File("$buildDir/build.properties").bufferedWriter().use {
+    File("${layout.buildDirectory}/build.properties").bufferedWriter().use {
       props.toProperties().store(it, "Written by Gradle")
     }
   }
