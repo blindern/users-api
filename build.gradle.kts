@@ -31,7 +31,7 @@ dependencies {
   implementation("org.http4k:http4k-format-moshi:5.37.1.1")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
-  implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+  implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.21")
   implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
