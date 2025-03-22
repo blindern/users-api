@@ -5,7 +5,7 @@ import java.time.Instant
 
 plugins {
   application
-  id("org.jetbrains.kotlin.jvm") version "2.1.10"
+  id("org.jetbrains.kotlin.jvm") version "2.1.20"
   id("com.github.johnrengelman.shadow") version "8.1.1"
   id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
   id("com.github.ben-manes.versions") version "0.51.0"
@@ -32,8 +32,8 @@ dependencies {
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.10")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.20")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.20")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
   implementation("ch.qos.logback:logback-classic:1.5.18")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
