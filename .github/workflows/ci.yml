@@ -5,6 +5,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -17,19 +20,13 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - run: ./gradlew check
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
+          report_paths: "**/build/test-results/test/TEST-*.xml"
 
       - run: ./gradlew shadowJar
       - run: ./gradlew dockerBuildProperties
@@ -40,11 +37,27 @@ jobs:
         with:
           context: .
           load: true
-          tags: blindern/users-api:latest
+          tags: europe-north2-docker.pkg.dev/foreningenbs/fbs-docker/users-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - run: scripts/docker-test-image.sh blindern/users-api:latest
+      - run: scripts/docker-test-image.sh europe-north2-docker.pkg.dev/foreningenbs/fbs-docker/users-api:latest
+
+      - id: gcp-auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          token_format: access_token
+          workload_identity_provider: projects/foreningenbs/locations/global/workloadIdentityPools/github/providers/github
+          service_account: github-actions@foreningenbs.iam.gserviceaccount.com
+          access_token_lifetime: 300s
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west3-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.gcp-auth.outputs.access_token }}
 
       - name: Push container
         if: github.ref == 'refs/heads/master'
@@ -53,7 +66,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: blindern/users-api:latest
+          tags: europe-north2-docker.pkg.dev/foreningenbs/fbs-docker/users-api:latest
 
       - name: Deploy
         if: github.ref == 'refs/heads/master'
@@ -62,7 +75,7 @@ jobs:
           {
             "service": "users-api",
             "attributes": {
-              "image": "blindern/users-api@${{ steps.docker_build.outputs.digest }}"
+              "image": "europe-north2-docker.pkg.dev/foreningenbs/fbs-docker/users-api@${{ steps.docker_build.outputs.digest }}"
             }
           }'
         env:
