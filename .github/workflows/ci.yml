@@ -48,7 +48,7 @@ jobs:
         uses: google-github-actions/auth@v3
         with:
           token_format: access_token
-          workload_identity_provider: projects/foreningenbs/locations/global/workloadIdentityPools/github/providers/github
+          workload_identity_provider: projects/277979591283/locations/global/workloadIdentityPools/github/providers/github
           service_account: github-actions@foreningenbs.iam.gserviceaccount.com
           access_token_lifetime: 300s
 
