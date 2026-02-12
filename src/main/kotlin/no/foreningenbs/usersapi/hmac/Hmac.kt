@@ -13,9 +13,13 @@ import java.time.Instant
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-class Hmac(private val timeout: Long, private val key: String) {
+class Hmac(
+  private val timeout: Long,
+  private val key: String,
+) {
   private val moshi =
-    Moshi.Builder()
+    Moshi
+      .Builder()
       .add(KotlinJsonAdapterFactory())
       .build()
 
@@ -31,8 +35,7 @@ class Hmac(private val timeout: Long, private val key: String) {
       .with(
         hmacHashHeader of
           generateHash(time, req.method, req.uri, req.formAsMap()),
-      )
-      .with(hmacTimeHeader of time)
+      ).with(hmacTimeHeader of time)
   }
 
   fun generateHash(
@@ -46,8 +49,7 @@ class Hmac(private val timeout: Long, private val key: String) {
         .map { (key, list) ->
           // Only pick first variable if multiple is given
           key to list[0]
-        }
-        .toMap()
+        }.toMap()
 
     val dataList =
       listOf(
@@ -72,9 +74,11 @@ class Hmac(private val timeout: Long, private val key: String) {
   }
 
   private fun hex(data: ByteArray) =
-    data.fold(StringBuilder()) { acc, next ->
-      acc.append(String.format("%02x", next))
-    }.toString().lowercase()
+    data
+      .fold(StringBuilder()) { acc, next ->
+        acc.append(String.format("%02x", next))
+      }.toString()
+      .lowercase()
 
   companion object {
     const val HASH_HEADER = "X-API-Hash"

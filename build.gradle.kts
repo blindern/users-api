@@ -5,19 +5,13 @@ import java.time.Instant
 plugins {
   application
   id("org.jetbrains.kotlin.jvm") version "2.3.10"
-  id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
+  id("com.gradleup.shadow") version "9.3.1"
+  id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
   id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 group = "no.foreningenbs"
 version = "1.0-SNAPSHOT"
-
-buildscript {
-  dependencies {
-    classpath("com.karumi.kotlinsnapshot:plugin:2.3.0")
-  }
-}
 
 repositories {
   mavenCentral()
@@ -25,9 +19,9 @@ repositories {
 
 dependencies {
   implementation(kotlin("stdlib-jdk8"))
-  implementation("org.http4k:http4k-core:5.47.0.0")
-  implementation("org.http4k:http4k-server-jetty:5.47.0.0")
-  implementation("org.http4k:http4k-format-moshi:5.47.0.0")
+  implementation("org.http4k:http4k-core:6.28.1.0")
+  implementation("org.http4k:http4k-server-jetty:6.28.1.0")
+  implementation("org.http4k:http4k-format-moshi:6.28.1.0")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
@@ -37,14 +31,14 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:1.5.28")
   implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
   implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
-  implementation("io.github.microutils:kotlin-logging:3.0.5")
+  implementation("io.github.oshai:kotlin-logging:7.0.14")
   testImplementation("io.kotest:kotest-assertions-core:6.1.3")
   testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.19")
   testImplementation("io.mockk:mockk:1.14.9")
   testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.19")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testImplementation("com.karumi.kotlinsnapshot:core:2.3.0")
 }
-
-apply(plugin = "com.karumi.kotlin-snapshot")
 
 kotlin {
   jvmToolchain(21)
@@ -77,10 +71,11 @@ tasks.register("dockerBuildProperties") {
     )
 
   inputs.properties(props)
-  outputs.file("$buildDir/build.properties")
+  val outputFile = layout.buildDirectory.file("build.properties")
+  outputs.file(outputFile)
 
   doLast {
-    File("$buildDir/build.properties").bufferedWriter().use {
+    outputFile.get().asFile.bufferedWriter().use {
       props.toProperties().store(it, "Written by Gradle")
     }
   }
@@ -89,15 +84,17 @@ tasks.register("dockerBuildProperties") {
 tasks.withType<DependencyUpdatesTask> {
   resolutionStrategy {
     componentSelection {
-      all {
-        val rejected =
-          listOf("alpha", "beta", "rc", "cr", "m", "preview", "eap")
-            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
-            .any { it.matches(candidate.version) }
-        if (rejected) {
-          reject("Release candidate")
-        }
-      }
+      all(
+        Action<ComponentSelection> {
+          val rejected =
+            listOf("alpha", "beta", "rc", "cr", "m", "preview", "eap")
+              .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
+              .any { it.matches(candidate.version) }
+          if (rejected) {
+            reject("Release candidate")
+          }
+        },
+      )
     }
   }
 }

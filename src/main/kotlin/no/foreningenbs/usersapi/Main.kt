@@ -1,6 +1,6 @@
 package no.foreningenbs.usersapi
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.foreningenbs.usersapi.api.InvalidateCache
 import no.foreningenbs.usersapi.api.auth.SimpleAuth
 import no.foreningenbs.usersapi.api.groups.AddUserToGroup
@@ -46,10 +46,10 @@ val loggingFilter =
     { req ->
       try {
         val res = next(req)
-        logger.info("[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})")
+        logger.info { "[${res.status}] ${req.method} ${req.uri} (agent: ${req.header("user-agent")})" }
         res
       } catch (e: Throwable) {
-        logger.error("Exception caught for: ${req.method} ${req.uri} (agent: ${req.header("user-agent")})", e)
+        logger.error(e) { "Exception caught for: ${req.method} ${req.uri} (agent: ${req.header("user-agent")})" }
         Response(INTERNAL_SERVER_ERROR).body("Request failed. See logs")
       }
     }
@@ -58,7 +58,8 @@ val loggingFilter =
 fun server(
   ldap: Ldap,
   dataProvider: DataProvider,
-) = ServerFilters.GZip()
+) = ServerFilters
+  .GZip()
   .then(loggingFilter)
   .then(app(ldap, dataProvider))
   .asServer(Jetty(8000))
@@ -112,9 +113,9 @@ fun app(
         ),
     )
 
-  return ServerFilters.CatchLensFailure { it: LensFailure ->
-    logger.debug("Lens failure: ${it.message}", it)
-    Response(BAD_REQUEST).body(it.failures.joinToString("; "))
-  }
-    .then(routes)
+  return ServerFilters
+    .CatchLensFailure { it: LensFailure ->
+      logger.debug(it) { "Lens failure: ${it.message}" }
+      Response(BAD_REQUEST).body(it.failures.joinToString("; "))
+    }.then(routes)
 }

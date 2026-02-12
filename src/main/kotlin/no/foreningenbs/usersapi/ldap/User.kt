@@ -35,15 +35,13 @@ data class User(
       map["groups_relation"] = data.userGroups[reference]
         ?.map { (groupRef, groupRefList) ->
           groupRef.groupname to groupRefList.map { it.groupname }
-        }
-        ?.toMap()
+        }?.toMap()
         ?: emptyMap<Any, Any>()
 
       map["groupsowner_relation"] = data.userOwns[reference]
         ?.map { (groupRef, groupRefList) ->
           groupRef.groupname to groupRefList.map { it.groupname }
-        }
-        ?.toMap()
+        }?.toMap()
         ?: emptyMap<Any, Any>()
     }
 
@@ -59,8 +57,7 @@ data class User(
             withOwners = false,
             withMembersData = false,
           )
-        }
-        ?.toList()
+        }?.toList()
         ?: emptyList<Any>()
     }
 

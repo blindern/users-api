@@ -18,7 +18,10 @@ import org.http4k.lens.Header
 import org.http4k.lens.Validator
 import org.http4k.lens.webForm
 
-class SimpleAuth(private val ldap: Ldap, private val dataProvider: DataProvider) {
+class SimpleAuth(
+  private val ldap: Ldap,
+  private val dataProvider: DataProvider,
+) {
   private val usernameField = FormField.required("username")
   private val passwordField = FormField.required("password")
   private val bodyLens = Body.auto<Content>().toLens()

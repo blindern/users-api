@@ -16,7 +16,8 @@ class CustomSSLSocketFactory : SSLSocketFactory() {
 
     val certificateFactoryX509 = CertificateFactory.getInstance("X.509")
     val certificate =
-      javaClass.classLoader.getResource("ca.crt")!!
+      javaClass.classLoader
+        .getResource("ca.crt")!!
         .openStream()
         .use {
           certificateFactoryX509.generateCertificate(it)

@@ -3,7 +3,9 @@ package no.foreningenbs.usersapi.ldap
 import no.foreningenbs.usersapi.ldap.Reference.GroupRef
 import no.foreningenbs.usersapi.ldap.Reference.UserRef
 
-class MemberExpander(private val groups: Map<GroupRef, Group>) {
+class MemberExpander(
+  private val groups: Map<GroupRef, Group>,
+) {
   private val parsed = mutableMapOf<GroupRef, Map<UserRef, MutableList<GroupRef>>>()
 
   /**

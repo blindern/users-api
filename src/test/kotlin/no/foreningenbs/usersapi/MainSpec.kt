@@ -170,7 +170,12 @@ object MainSpec : Spek({
         describe("using valid credentials") {
           val res by memoized(mode = CachingMode.EACH_GROUP) {
             val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
-            val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter<Map<String, String>>(type)
+            val adapter =
+              Moshi
+                .Builder()
+                .add(KotlinJsonAdapterFactory())
+                .build()
+                .adapter<Map<String, String>>(type)
             val body =
               adapter.toJson(
                 mapOf(
