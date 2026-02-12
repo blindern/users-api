@@ -10,7 +10,9 @@ import org.http4k.core.with
 import org.http4k.lens.Query
 import org.http4k.lens.int
 
-class ListUsers(private val dataProvider: DataProvider) {
+class ListUsers(
+  private val dataProvider: DataProvider,
+) {
   private val usernamesLens = Query.optional("usernames")
   private val emailsLens = Query.optional("emails")
   private val phoneNumbersLens = Query.optional("phoneNumbers")
@@ -35,18 +37,22 @@ class ListUsers(private val dataProvider: DataProvider) {
     if (emails != null) {
       haveFilter = true
       userRefs.addAll(
-        emails.split(",").mapNotNull { email ->
-          data.emails[email]
-        }.flatten(),
+        emails
+          .split(",")
+          .mapNotNull { email ->
+            data.emails[email]
+          }.flatten(),
       )
     }
 
     if (phoneNumbers != null) {
       haveFilter = true
       userRefs.addAll(
-        phoneNumbers.split(",").mapNotNull { email ->
-          data.phoneNumbers[email]
-        }.flatten(),
+        phoneNumbers
+          .split(",")
+          .mapNotNull { email ->
+            data.phoneNumbers[email]
+          }.flatten(),
       )
     }
 
@@ -68,9 +74,10 @@ class ListUsers(private val dataProvider: DataProvider) {
 
     Response(OK).with(
       jsonArrayMapLens of
-        users.map {
-          it.toResponse(dataProvider, grouplevel >= 1, grouplevel >= 2)
-        }.toTypedArray(),
+        users
+          .map {
+            it.toResponse(dataProvider, grouplevel >= 1, grouplevel >= 2)
+          }.toTypedArray(),
     )
   }
 }

@@ -22,7 +22,9 @@ import javax.naming.ldap.LdapContext
 import javax.naming.ldap.StartTlsRequest
 import javax.naming.ldap.StartTlsResponse
 
-class Ldap(private val config: Config) {
+class Ldap(
+  private val config: Config,
+) {
   private val dnPattern = "^(.+?)=(.+?),(.+)$".toRegex().toPattern()
 
   fun testCredentials(
@@ -93,12 +95,10 @@ class Ldap(private val config: Config) {
             it.attributes[User.REALNAME]?.first(),
             it.attributes[User.PHONE]?.first(),
           )
-        }
-        .sortedBy { it.realname }
+        }.sortedBy { it.realname }
         .map {
           UserRef(it.username) to it
-        }
-        .toMap()
+        }.toMap()
     }
 
   fun getGroups(filter: String? = null): Map<GroupRef, Group> {
@@ -115,8 +115,7 @@ class Ldap(private val config: Config) {
         .search(config.ldap.groupsDn, fullFilter, Group.ldapFieldList)
         .filterNot {
           (it.attributes[Group.NAME]?.get() as String) in config.ldap.groupsIgnore
-        }
-        .map { res ->
+        }.map { res ->
           val members = res.attributes[Group.MEMBERS]?.list() ?: emptyList()
           val owners = res.attributes[Group.OWNERS]?.list() ?: emptyList()
 
@@ -130,8 +129,7 @@ class Ldap(private val config: Config) {
             members.toReference(),
             owners.toReference(),
           )
-        }
-        .sortedBy { it.name }
+        }.sortedBy { it.name }
         .associateBy {
           GroupRef(it.name)
         }
@@ -165,8 +163,7 @@ class Ldap(private val config: Config) {
         field,
         escape(it),
       )
-    }
-    .let {
+    }.let {
       require(values.isNotEmpty())
       "(|%s)".format(it.joinToString(""))
     }
@@ -276,9 +273,13 @@ class Ldap(private val config: Config) {
     }
   }
 
-  data class StringValue(val value: String)
+  data class StringValue(
+    val value: String,
+  )
 
-  data class OptionalStringValue(val value: String?)
+  data class OptionalStringValue(
+    val value: String?,
+  )
 
   /**
    * Modify a user.
@@ -449,12 +450,12 @@ class Ldap(private val config: Config) {
     val groupMembers: Map<GroupRef, Map<UserRef, List<GroupRef>>> =
       groups.values.associate { group ->
         val members =
-          memberExpander.parse(group)
+          memberExpander
+            .parse(group)
             .toList()
             .sortedBy { (userRef, _) ->
               users[userRef]?.realname ?: userRef.username
-            }
-            .toMap()
+            }.toMap()
 
         group.reference to members
       }
@@ -565,11 +566,15 @@ data class AllData(
 )
 
 sealed class Reference {
-  data class UserRef(val username: String) : Reference() {
+  data class UserRef(
+    val username: String,
+  ) : Reference() {
     override fun toString(): String = "user:$username"
   }
 
-  data class GroupRef(val groupname: String) : Reference() {
+  data class GroupRef(
+    val groupname: String,
+  ) : Reference() {
     override fun toString(): String = "group:$groupname"
   }
 }

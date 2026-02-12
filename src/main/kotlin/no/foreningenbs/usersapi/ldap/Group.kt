@@ -55,11 +55,12 @@ data class Group(
           }
         }
 
-      map["members_relation"] = dataProvider.getData().groupMembers[reference]
+      map["members_relation"] = dataProvider
+        .getData()
+        .groupMembers[reference]
         ?.map { (userRef, groupRefList) ->
           userRef.username to groupRefList.map { it.groupname }
-        }
-        ?.toMap()
+        }?.toMap()
         ?: emptyMap<String, Any>()
     }
 
@@ -88,8 +89,7 @@ data class Group(
                 withGroupsDetailed = false,
               )
           }
-        }
-        ?.toMap()
+        }?.toMap()
         ?: emptyMap<String, Any>()
     }
 

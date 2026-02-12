@@ -8,7 +8,8 @@ import org.http4k.lens.Header.CONTENT_TYPE
 
 object WrappedResponse {
   private val moshi =
-    Moshi.Builder()
+    Moshi
+      .Builder()
       .add(KotlinJsonAdapterFactory())
       .build()
 
@@ -25,7 +26,8 @@ object WrappedResponse {
             )
 
           val data =
-            moshi.adapter(Response::class.java)
+            moshi
+              .adapter(Response::class.java)
               .toJson(wrapper)
               .replace("\"REPLACEME\"", res.bodyString())
 
@@ -37,6 +39,12 @@ object WrappedResponse {
     }
 }
 
-data class StatusBody(val code: Int, val text: String)
+data class StatusBody(
+  val code: Int,
+  val text: String,
+)
 
-data class Response(val status: StatusBody, val result: String)
+data class Response(
+  val status: StatusBody,
+  val result: String,
+)

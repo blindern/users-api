@@ -8,7 +8,9 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.core.with
 import org.http4k.lens.Query
 
-class ListGroups(private val dataProvider: DataProvider) {
+class ListGroups(
+  private val dataProvider: DataProvider,
+) {
   private val groupnamesLens = Query.optional("groupnames")
 
   val handler = handler@{ req: Request ->
@@ -26,19 +28,19 @@ class ListGroups(private val dataProvider: DataProvider) {
               it.name in names
             }
           }
-        }
-        .toList()
+        }.toList()
 
     Response(OK).with(
       jsonArrayMapLens of
-        groups.map {
-          it.toResponse(
-            dataProvider,
-            withMembers = false,
-            withOwners = false,
-            withMembersData = false,
-          )
-        }.toTypedArray(),
+        groups
+          .map {
+            it.toResponse(
+              dataProvider,
+              withMembers = false,
+              withOwners = false,
+              withMembersData = false,
+            )
+          }.toTypedArray(),
     )
   }
 }

@@ -15,7 +15,10 @@ import org.http4k.core.with
 import org.http4k.format.Moshi.auto
 import org.http4k.lens.Header
 
-class CreateUser(private val ldap: Ldap, private val dataProvider: DataProvider) {
+class CreateUser(
+  private val ldap: Ldap,
+  private val dataProvider: DataProvider,
+) {
   val bodyLens = Body.auto<Content>().toLens()
 
   val handler = handler@{ req: Request ->

@@ -1,6 +1,6 @@
 package no.foreningenbs.usersapi
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.foreningenbs.usersapi.hmac.Hmac
 import no.foreningenbs.usersapi.hmac.Hmac.Companion.HASH_HEADER
 import no.foreningenbs.usersapi.hmac.Hmac.Companion.TIME_HEADER
@@ -56,7 +56,7 @@ class AuthFilter(
 
         // Special case for development.
         if (!enforceAuth) {
-          logger.warn("Request served without authentication due to configuration override")
+          logger.warn { "Request served without authentication due to configuration override" }
           next(req)
         } else {
           Response(Status.UNAUTHORIZED).body("No authentication given")

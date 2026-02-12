@@ -9,7 +9,10 @@ import org.http4k.core.Status
 import org.http4k.core.Status.Companion.NO_CONTENT
 import org.http4k.lens.Path
 
-class RemoveUserFromGroup(private val ldap: Ldap, private val dataProvider: DataProvider) {
+class RemoveUserFromGroup(
+  private val ldap: Ldap,
+  private val dataProvider: DataProvider,
+) {
   val handler = handler@{ req: Request ->
     val groupname = Path.of("groupname")(req)
 

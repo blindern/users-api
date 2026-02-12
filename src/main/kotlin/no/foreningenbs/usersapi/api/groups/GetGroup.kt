@@ -10,7 +10,9 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.core.with
 import org.http4k.lens.Path
 
-class GetGroup(private val dataProvider: DataProvider) {
+class GetGroup(
+  private val dataProvider: DataProvider,
+) {
   val handler = handler@{ req: Request ->
     val groupname = Path.of("groupname")(req)
     val group =

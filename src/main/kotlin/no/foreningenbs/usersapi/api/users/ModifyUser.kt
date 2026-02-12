@@ -17,7 +17,10 @@ import org.http4k.format.Moshi.auto
 import org.http4k.lens.Header
 import org.http4k.lens.Path
 
-class ModifyUser(private val ldap: Ldap, private val dataProvider: DataProvider) {
+class ModifyUser(
+  private val ldap: Ldap,
+  private val dataProvider: DataProvider,
+) {
   val bodyLens = Body.auto<Content>().toLens()
 
   val handler = handler@{ req: Request ->
