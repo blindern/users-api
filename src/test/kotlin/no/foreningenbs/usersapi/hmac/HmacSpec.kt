@@ -15,7 +15,7 @@ object HmacSpec : Spek({
           1546066592L,
           Method.GET,
           Uri.of("/users"),
-          mapOf(),
+          hmac.prepareFormPayload(mapOf()),
         )
 
       val expected = "8623a8a04b33f9e02e0eb0654ea658420b2da418b5755a72d4cc231649c1aa7a"

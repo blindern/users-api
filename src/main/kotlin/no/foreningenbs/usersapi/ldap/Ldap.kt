@@ -217,6 +217,7 @@ class Ldap(
     email: String,
     phone: String?,
     passwordInPlaintext: String?,
+    passwordHash: String? = null,
   ) {
     withConnection(allowSlave = false) { ctx ->
       val attributes = BasicAttributes()
@@ -250,7 +251,9 @@ class Ldap(
       objectClass.add("sambaSamAccount")
       attributes.put(objectClass)
 
-      if (passwordInPlaintext != null) {
+      if (passwordHash != null) {
+        attributes.put("userPassword", passwordHash)
+      } else if (passwordInPlaintext != null) {
         attributes.put("userPassword", generatePasswordHash(passwordInPlaintext))
       }
       attributes.put("sambaAcctFlags", "[UX]")
@@ -291,6 +294,7 @@ class Ldap(
     email: StringValue?,
     phone: OptionalStringValue?,
     passwordInPlaintext: OptionalStringValue?,
+    passwordHash: OptionalStringValue? = null,
   ) {
     data class ExistingData(
       val firstName: String,
@@ -346,7 +350,16 @@ class Ldap(
         }
       }
 
-      if (passwordInPlaintext != null) {
+      if (passwordHash != null && passwordHash.value != null) {
+        update(BasicAttribute("userPassword", passwordHash.value))
+
+        if (existingAttr.get("sambaLMPassword") != null) {
+          remove("sambaLMPassword")
+        }
+        if (existingAttr.get("sambaNTPassword") != null) {
+          remove("sambaNTPassword")
+        }
+      } else if (passwordInPlaintext != null) {
         if (passwordInPlaintext.value != null) {
           update(BasicAttribute("userPassword", generatePasswordHash(passwordInPlaintext.value)))
         } else if (existingAttr.get("userPassword") != null) {

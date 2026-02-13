@@ -49,6 +49,10 @@ class CreateUser(
       return@handler Response(Status.BAD_REQUEST).body("Email address already in use")
     }
 
+    if (body.passwordHash != null && body.passwordInPlaintext != null) {
+      return@handler Response(Status.BAD_REQUEST).body("Cannot provide both passwordHash and passwordInPlaintext")
+    }
+
     // Okay - let's go ahead create it.
 
     ldap.createUser(
@@ -58,6 +62,7 @@ class CreateUser(
       email = body.email,
       phone = body.phone,
       passwordInPlaintext = body.passwordInPlaintext,
+      passwordHash = body.passwordHash,
     )
 
     dataProvider.invalidateCache()
@@ -83,5 +88,6 @@ class CreateUser(
     val email: String,
     val phone: String?,
     val passwordInPlaintext: String?,
+    val passwordHash: String? = null,
   )
 }

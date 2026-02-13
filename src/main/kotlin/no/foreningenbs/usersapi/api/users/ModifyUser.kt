@@ -35,6 +35,10 @@ class ModifyUser(
 
     val body = bodyLens(req)
 
+    if (body.passwordHash != null && body.passwordInPlaintext != null) {
+      return@handler Response(Status.BAD_REQUEST).body("Cannot provide both passwordHash and passwordInPlaintext")
+    }
+
     if (body.email != null) {
       val usersWithEmail = ldap.getUsers(filter = "(mail=${escape(body.email.value)})").values.map { it.username }
       if (usersWithEmail.isNotEmpty() && usersWithEmail != listOf(username)) {
@@ -49,6 +53,7 @@ class ModifyUser(
       email = body.email?.toLdapValue(),
       phone = body.phone?.toLdapValue(),
       passwordInPlaintext = body.passwordInPlaintext?.toLdapValue(),
+      passwordHash = body.passwordHash?.toLdapValue(),
     )
 
     dataProvider.invalidateCache()
@@ -85,5 +90,6 @@ class ModifyUser(
     val email: StringValue?,
     val phone: OptionalStringValue?,
     val passwordInPlaintext: OptionalStringValue?,
+    val passwordHash: OptionalStringValue? = null,
   )
 }
