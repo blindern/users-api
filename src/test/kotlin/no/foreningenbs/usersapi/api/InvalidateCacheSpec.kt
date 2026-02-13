@@ -1,5 +1,6 @@
 package no.foreningenbs.usersapi.api
 
+import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
@@ -7,26 +8,26 @@ import no.foreningenbs.usersapi.Config
 import no.foreningenbs.usersapi.DataProvider
 import no.foreningenbs.usersapi.createLdapMock
 import org.http4k.core.Method
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import org.http4k.core.Request
 
-object InvalidateCacheSpec : Spek({
-  val ldap = createLdapMock()
-  val dataProvider = DataProvider(Config, ldap)
-  val handler = InvalidateCache(dataProvider).handler
+class InvalidateCacheSpec :
+  DescribeSpec({
+    val ldap = createLdapMock()
+    val dataProvider = DataProvider(Config, ldap)
+    val handler = InvalidateCache(dataProvider).handler
 
-  describe("cache invalidation") {
-    it("should invalidate cache") {
-      val data = dataProvider.getData()
+    describe("cache invalidation") {
+      it("should invalidate cache") {
+        val data = dataProvider.getData()
 
-      every { ldap.getGroups(any()) } returns mapOf()
-      every { ldap.getUsers(any()) } returns mapOf()
+        every { ldap.getGroups(any()) } returns mapOf()
+        every { ldap.getUsers(any()) } returns mapOf()
 
-      dataProvider.getData() shouldBe data
+        dataProvider.getData() shouldBe data
 
-      handler(org.http4k.core.Request(Method.POST, "/dummy"))
+        handler(Request(Method.POST, "/dummy"))
 
-      dataProvider.getData() shouldNotBe data
+        dataProvider.getData() shouldNotBe data
+      }
     }
-  }
-})
+  })
