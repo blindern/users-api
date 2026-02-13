@@ -66,7 +66,7 @@ val mockGroups =
       ),
     ),
     mockAdminGroup,
-  ).map { GroupRef(it.name) to it }.toMap()
+  ).associate { GroupRef(it.name) to it }
 
 fun createLdapMock(): Ldap =
   spyk(Ldap(Config)).also {

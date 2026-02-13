@@ -18,24 +18,19 @@ repositories {
 }
 
 dependencies {
-  implementation(kotlin("stdlib-jdk8"))
   implementation("org.http4k:http4k-core:6.28.1.0")
   implementation("org.http4k:http4k-server-jetty:6.28.1.0")
   implementation("org.http4k:http4k-format-moshi:6.28.1.0")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.3.10")
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.10")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
   implementation("ch.qos.logback:logback-classic:1.5.29")
-  implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
-  implementation("de.gessnerfl.logback:logback-gson-formatter:0.1.0")
   implementation("io.github.oshai:kotlin-logging:7.0.14")
   testImplementation("io.kotest:kotest-assertions-core:6.1.3")
-  testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.19")
   testImplementation("io.mockk:mockk:1.14.9")
-  testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.19")
+  testImplementation("io.kotest:kotest-runner-junit5:6.1.3")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
   testImplementation("com.karumi.kotlinsnapshot:core:2.3.0")
 }
@@ -53,9 +48,7 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Test> {
-  useJUnitPlatform {
-    includeEngines("spek2")
-  }
+  useJUnitPlatform()
 }
 
 tasks.register("dockerBuildProperties") {
