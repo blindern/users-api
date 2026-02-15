@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew check      # Lint (ktlint) + test (Spek2)
 ```
 
-JDK 21+ required. Tests use snapshot testing (snapshots in `src/test/resources/__snapshot__/`).
+JDK 25+ required. Tests use snapshot testing (snapshots in `src/test/resources/__snapshot__/`).
 
 ## Architecture
 
