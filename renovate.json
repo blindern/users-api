@@ -1,20 +1,30 @@
 {
-  "extends": ["github>henrist/renovate-config:default"],
+  "extends": [
+    "github>henrist/renovate-config:default"
+  ],
   "automerge": true,
   "automergeType": "branch",
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["build\\.gradle\\.kts$"],
-      "matchStrings": ["jvmToolchain\\((?<currentValue>\\d+)\\)"],
+      "managerFilePatterns": [
+        "/build\\.gradle\\.kts$/"
+      ],
+      "matchStrings": [
+        "jvmToolchain\\((?<currentValue>\\d+)\\)"
+      ],
       "depNameTemplate": "java",
       "datasourceTemplate": "java-version",
       "extractVersionTemplate": "^(?<version>\\d+)"
     },
     {
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/[^/]+\\.yml$"],
-      "matchStrings": ["java-version:\\s*(?<currentValue>\\d+)"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.yml$/"
+      ],
+      "matchStrings": [
+        "java-version:\\s*(?<currentValue>\\d+)"
+      ],
       "depNameTemplate": "java",
       "datasourceTemplate": "java-version",
       "extractVersionTemplate": "^(?<version>\\d+)"
@@ -23,7 +33,10 @@
   "packageRules": [
     {
       "groupName": "jdk",
-      "matchPackageNames": ["eclipse-temurin", "java"]
+      "matchPackageNames": [
+        "eclipse-temurin",
+        "java"
+      ]
     }
   ]
 }
