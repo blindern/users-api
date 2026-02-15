@@ -16,7 +16,7 @@ class DataProvider(
         ldap.getAllData()
       }
 
-  fun getData(): AllData = cache["cache"]!!
+  fun getData(): AllData = cache["cache"]
 
   fun invalidateCache() {
     cache.invalidateAll()
