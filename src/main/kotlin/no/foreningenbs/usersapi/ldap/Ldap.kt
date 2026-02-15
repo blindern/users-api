@@ -382,75 +382,51 @@ class Ldap(
     }
   }
 
-  /**
-   * Add member to a group.
-   */
+  private fun referenceToDn(ref: Reference): String =
+    when (ref) {
+      is GroupRef -> groupDn(ref.groupname)
+      is UserRef -> userDn(ref.username)
+    }
+
+  private fun modifyGroupAttribute(
+    group: GroupRef,
+    attributeName: String,
+    ref: Reference,
+    add: Boolean,
+  ) {
+    withConnection(allowSlave = false) { ctx ->
+      val dn = groupDn(group.groupname)
+      val existingAttr = ctx.getAttributes(dn, arrayOf(attributeName))
+      val attribute = existingAttr[attributeName] ?: BasicAttribute(attributeName)
+      val value = referenceToDn(ref)
+
+      val shouldModify = if (add) value !in attribute else value in attribute
+      if (!shouldModify) return@withConnection
+
+      if (add) attribute.add(value) else attribute.remove(value)
+      ctx.modifyAttributes(dn, arrayOf(ModificationItem(DirContext.REPLACE_ATTRIBUTE, attribute)))
+    }
+  }
+
   fun addGroupMember(
     group: GroupRef,
     member: Reference,
-  ) {
-    withConnection(allowSlave = false) { ctx ->
-      val existingAttr =
-        ctx.getAttributes(
-          groupDn(group.groupname),
-          arrayOf(Group.MEMBERS),
-        )
+  ) = modifyGroupAttribute(group, Group.MEMBERS, member, add = true)
 
-      val memberValue =
-        when (member) {
-          is GroupRef -> groupDn(member.groupname)
-          is UserRef -> userDn(member.username)
-        }
-
-      val membersAttribute = existingAttr[Group.MEMBERS] ?: BasicAttribute(Group.MEMBERS)
-
-      if (memberValue !in membersAttribute) {
-        membersAttribute.add(memberValue)
-
-        val attributes =
-          listOf(
-            ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute),
-          )
-
-        ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
-      }
-    }
-  }
-
-  /**
-   * Remove member from a group.
-   */
   fun removeGroupMember(
     group: GroupRef,
     member: Reference,
-  ) {
-    withConnection(allowSlave = false) { ctx ->
-      val existingAttr =
-        ctx.getAttributes(
-          groupDn(group.groupname),
-          arrayOf(Group.MEMBERS),
-        )
+  ) = modifyGroupAttribute(group, Group.MEMBERS, member, add = false)
 
-      val memberValue =
-        when (member) {
-          is GroupRef -> groupDn(member.groupname)
-          is UserRef -> userDn(member.username)
-        }
+  fun addGroupOwner(
+    group: GroupRef,
+    owner: Reference,
+  ) = modifyGroupAttribute(group, Group.OWNERS, owner, add = true)
 
-      val membersAttribute = existingAttr[Group.MEMBERS] ?: BasicAttribute(Group.MEMBERS)
-
-      if (memberValue in membersAttribute) {
-        membersAttribute.remove(memberValue)
-
-        val attributes =
-          listOf(
-            ModificationItem(DirContext.REPLACE_ATTRIBUTE, membersAttribute),
-          )
-
-        ctx.modifyAttributes(groupDn(group.groupname), attributes.toTypedArray())
-      }
-    }
-  }
+  fun removeGroupOwner(
+    group: GroupRef,
+    owner: Reference,
+  ) = modifyGroupAttribute(group, Group.OWNERS, owner, add = false)
 
   /**
    * Generate cache of all users and groups

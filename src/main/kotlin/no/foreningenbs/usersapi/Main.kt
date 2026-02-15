@@ -3,10 +3,12 @@ package no.foreningenbs.usersapi
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.foreningenbs.usersapi.api.InvalidateCache
 import no.foreningenbs.usersapi.api.auth.SimpleAuth
-import no.foreningenbs.usersapi.api.groups.AddUserToGroup
+import no.foreningenbs.usersapi.api.groups.AddMemberToGroup
+import no.foreningenbs.usersapi.api.groups.AddOwnerToGroup
 import no.foreningenbs.usersapi.api.groups.GetGroup
 import no.foreningenbs.usersapi.api.groups.ListGroups
-import no.foreningenbs.usersapi.api.groups.RemoveUserFromGroup
+import no.foreningenbs.usersapi.api.groups.RemoveMemberFromGroup
+import no.foreningenbs.usersapi.api.groups.RemoveOwnerFromGroup
 import no.foreningenbs.usersapi.api.users.CreateUser
 import no.foreningenbs.usersapi.api.users.GetUser
 import no.foreningenbs.usersapi.api.users.ListUsers
@@ -105,8 +107,10 @@ fun app(
                 "/users/{username}/modify" bind POST to ModifyUser(ldap, dataProvider).handler,
                 "/groups" bind GET to ListGroups(dataProvider).handler,
                 "/groups/{groupname}" bind GET to GetGroup(dataProvider).handler,
-                "/groups/{groupname}/members/users/{username}" bind PUT to AddUserToGroup(ldap, dataProvider).handler,
-                "/groups/{groupname}/members/users/{username}" bind DELETE to RemoveUserFromGroup(ldap, dataProvider).handler,
+                "/groups/{groupname}/members/{memberType}/{memberId}" bind PUT to AddMemberToGroup(ldap, dataProvider).handler,
+                "/groups/{groupname}/members/{memberType}/{memberId}" bind DELETE to RemoveMemberFromGroup(ldap, dataProvider).handler,
+                "/groups/{groupname}/owners/{ownerType}/{ownerId}" bind PUT to AddOwnerToGroup(ldap, dataProvider).handler,
+                "/groups/{groupname}/owners/{ownerType}/{ownerId}" bind DELETE to RemoveOwnerFromGroup(ldap, dataProvider).handler,
                 "/simpleauth" bind POST to SimpleAuth(ldap, dataProvider).handler,
               ),
           ),
