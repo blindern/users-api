@@ -18,9 +18,9 @@ repositories {
 }
 
 dependencies {
-  implementation("org.http4k:http4k-core:6.30.0.0")
-  implementation("org.http4k:http4k-server-jetty:6.30.0.0")
-  implementation("org.http4k:http4k-format-moshi:6.30.0.0")
+  implementation("org.http4k:http4k-core:6.30.1.0")
+  implementation("org.http4k:http4k-server-jetty:6.30.1.0")
+  implementation("org.http4k:http4k-format-moshi:6.30.1.0")
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
