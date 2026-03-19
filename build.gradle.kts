@@ -4,7 +4,7 @@ import java.time.Instant
 
 plugins {
   application
-  id("org.jetbrains.kotlin.jvm") version "2.3.10"
+  id("org.jetbrains.kotlin.jvm") version "2.3.20"
   id("com.gradleup.shadow") version "9.4.0"
   id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
   id("com.github.ben-manes.versions") version "0.53.0"
@@ -24,7 +24,7 @@ dependencies {
   implementation("com.natpryce:konfig:1.6.10.0")
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
   implementation("ch.qos.logback:logback-classic:1.5.32")
   implementation("io.github.oshai:kotlin-logging:8.0.01")
