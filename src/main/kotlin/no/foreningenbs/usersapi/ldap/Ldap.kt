@@ -237,7 +237,7 @@ class Ldap(
       attributes.put("givenName", firstName)
       attributes.put("homeDirectory", "/home/$username")
       attributes.put("loginShell", "/usr/sbin/nologin")
-      if (phone != null) {
+      if (!phone.isNullOrEmpty()) {
         attributes.put("mobile", phone)
       }
 
@@ -306,7 +306,7 @@ class Ldap(
       val existingAttr =
         ctx.getAttributes(
           userDn,
-          arrayOf("givenName", "sn", "phone", "sambaLMPassword", "sambaNTPassword"),
+          arrayOf("givenName", "sn", "mobile", "sambaLMPassword", "sambaNTPassword"),
         )
 
       val attributes = mutableListOf<ModificationItem>()
@@ -343,10 +343,10 @@ class Ldap(
       }
 
       if (phone != null) {
-        if (phone.value != null) {
-          update(BasicAttribute("phone", phone.value))
-        } else if (existingAttr.get("phone") != null) {
-          remove("phone")
+        if (!phone.value.isNullOrEmpty()) {
+          update(BasicAttribute("mobile", phone.value))
+        } else if (existingAttr.get("mobile") != null) {
+          remove("mobile")
         }
       }
 
