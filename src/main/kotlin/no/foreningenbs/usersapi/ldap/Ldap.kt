@@ -518,7 +518,7 @@ fun escape(value: String) =
     .replace("(", "\\28")
     .replace(")", "\\29")
     .replace("*", "\\2a")
-    .replace(0x0.toString(), "\\00")
+    .replace("\u0000", "\\00")
 
 fun <E> Enumeration<E>.toList(): List<E> {
   val list = mutableListOf<E>()
