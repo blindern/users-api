@@ -27,7 +27,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.4")
   implementation("ch.qos.logback:logback-classic:1.5.32")
-  implementation("io.github.oshai:kotlin-logging:8.0.01")
+  implementation("io.github.oshai:kotlin-logging:8.0.02")
   testImplementation("io.kotest:kotest-assertions-core:6.1.11")
   testImplementation("io.mockk:mockk:1.14.9")
   testImplementation("io.kotest:kotest-runner-junit5:6.1.11")
