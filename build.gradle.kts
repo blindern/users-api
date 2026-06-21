@@ -28,7 +28,7 @@ dependencies {
   implementation("com.github.ben-manes.caffeine:caffeine:3.2.4")
   implementation("ch.qos.logback:logback-classic:1.5.34")
   implementation("io.github.oshai:kotlin-logging:8.0.4")
-  testImplementation("io.kotest:kotest-assertions-core:6.2.0")
+  testImplementation("io.kotest:kotest-assertions-core:6.2.1")
   testImplementation("io.mockk:mockk:1.14.11")
   testImplementation("io.kotest:kotest-runner-junit5:6.2.0")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
