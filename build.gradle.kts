@@ -7,7 +7,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "2.4.10"
   id("com.gradleup.shadow") version "9.6.1"
   id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-  id("com.github.ben-manes.versions") version "0.59.0"
+  id("com.github.ben-manes.versions") version "0.60.0"
 }
 
 group = "no.foreningenbs"
