@@ -25,7 +25,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.15.2")
   implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.4.20")
-  implementation("com.github.ben-manes.caffeine:caffeine:3.2.4")
+  implementation("com.github.ben-manes.caffeine:caffeine:3.3.0")
   implementation("ch.qos.logback:logback-classic:1.6.3")
   implementation("io.github.oshai:kotlin-logging:8.0.4")
   testImplementation("io.kotest:kotest-assertions-core:6.2.5")
